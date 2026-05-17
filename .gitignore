@@ -47,6 +47,9 @@ ENV/
 profile_default/
 ipython_config.py
 
+# ---- Local-only personal copies (Chinese study notes; never publish) ----
+notebooks/.local_zh/
+
 # ---- Testing / coverage ----
 .pytest_cache/
 .coverage
