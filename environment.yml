@@ -1,0 +1,27 @@
+name: melanoma-scrnaseq
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  # Core single-cell stack
+  - scanpy
+  - anndata
+  - leidenalg
+  - louvain
+  - python-igraph
+  # Scientific Python
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - numba
+  - h5py
+  - statsmodels
+  # Plotting
+  - matplotlib
+  - seaborn
+  # Notebook / dev
+  - jupyterlab
+  - ipykernel
+  - pip
