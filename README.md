@@ -25,6 +25,17 @@ conda activate melanoma-scrnaseq
 python -c "import scanpy as sc; print(sc.__version__)"
 ```
 
+## Analysis stack
+
+Built on the standard Python single-cell ecosystem, pinned in
+[`environment.yml`](environment.yml):
+
+- **scanpy** / **anndata** — single-cell data structures, QC, clustering, DE
+- **scvi-tools** — probabilistic deep-learning models (integration, label transfer)
+- **scikit-learn**, **numpy**, **pandas**, **scipy**, **statsmodels** — numerics
+- **matplotlib**, **seaborn** — plotting
+- **jupyter** / **jupyterlab** — interactive analysis
+
 ## Directory structure
 
 ```

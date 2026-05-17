@@ -7,6 +7,7 @@ dependencies:
   # Core single-cell stack
   - scanpy
   - anndata
+  - scvi-tools
   - leidenalg
   - louvain
   - python-igraph
@@ -22,6 +23,7 @@ dependencies:
   - matplotlib
   - seaborn
   # Notebook / dev
+  - jupyter
   - jupyterlab
   - ipykernel
   - pip
