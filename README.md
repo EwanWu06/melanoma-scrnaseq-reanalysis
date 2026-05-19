@@ -6,8 +6,16 @@ transcriptional programs associated with the disease.
 
 ## Project status
 
-🚧 **In setup** — repository and analysis environment initialized (Q0.1).
-Data acquisition and analysis steps to follow.
+- [x] Stage 0: Setup & Foundation
+- [x] Stage 1: Foundation Building
+- [x] Stage 2: Classical Pipeline Replication
+- [ ] Stage 3: Deep Learning Methods Application
+- [ ] Stage 4: Synthesis & Deliverables
+
+**Stage 2 complete:** the classical pipeline (QC → HVG → PCA → Harmony → Leiden)
+re-analyzed the Tirosh malignant cells; only 2 of Tsoi's 4 states (Melanocytic,
+Undifferentiated) were robustly recovered — full write-up in
+[`docs/stage2_report.md`](docs/stage2_report.md).
 
 ## Environment setup
 
