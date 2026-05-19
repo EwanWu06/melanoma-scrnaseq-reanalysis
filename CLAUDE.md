@@ -150,8 +150,12 @@ distribution shift analysis.
 - UCE — raw-count blocker (see `docs/decision_log.md` 2026-05-19 (b) and
   `docs/stage3_feasibility_audit.md`).
 
-**Evaluation scope:** malignant-only subset (1,257 cells), consistent
-with Stage 2 and Balderson 2024.
+**Evaluation scope:** malignant-only subset (1,257 cells) for **all**
+cross-method comparisons (state recovery *and* batch quality), consistent
+with Stage 2 and Balderson 2024. Running batch-quality metrics on the
+**full** dataset (4,645 cells) is deferred to Stretch — it would address a
+different question (general-purpose batch correction across heterogeneous
+cell types) than the Tsoi-recovery question driving Stage 3.
 
 **Embedding dimensions:** 30 dimensions across all methods (parity with
 Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).

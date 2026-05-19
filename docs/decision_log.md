@@ -59,56 +59,43 @@ Original Tirosh email saved at docs/.private/correspondence/
 
 ---
 
-## 2026-05-19 (b): UCE Removed from Stage 3 Core
+## 2026-05-19 (b): UCE removed from Stage 3 Core
+
+> *This entry refines the 2026-05-19 (a) pivot decision. Following a
+> formal feasibility audit (docs/stage3_feasibility_audit.md), UCE was
+> investigated and found to share the same raw-count dependency as
+> scVI/scANVI, contrary to my initial expectation. This entry records
+> that finding.*
 
 ### Trigger
-Q3.1 feasibility audit (`docs/stage3_feasibility_audit.md`) reviewed live
-documentation and source code for each candidate Stage 3 integration method
-(Seurat RPCA, scGen, UCE) before any implementation began. The audit
-surfaced a compatibility problem with UCE that contradicts the assumption
-made in the 2026-05-19 (a) decision.
+Stage 3 feasibility audit (Q3.1) examined the live source code and
+preprocessing pipeline of UCE (snap-stanford/UCE). The README explicitly
+states `.X` should contain scRNA-seq counts, and the internal pipeline
+applies `log1p(x / sum(x) * 1000)` — a transformation that assumes
+integer counts as input.
 
 ### Decision
-Remove UCE from Stage 3 Core. Stage 3 proceeds with three integration
-methods: Harmony (Stage 2 baseline), Seurat RPCA, and scGen. UCE is
-documented as "investigated but ruled out" under the same blocker class as
-scVI / scANVI.
+Remove UCE from the Stage 3 Core method comparison. Document UCE in the
+same "investigated but ruled out due to raw-count dependence" category
+as scVI / scANVI / count-tokenized foundation models (Geneformer, scGPT).
 
 ### Reason
-- The UCE README specifies `.X` must contain scRNA-seq counts. The
-  `data_proc/` preprocessing source applies an internal
-  `log1p(x / sum(x) * 1000)` normalization that assumes count-scale input.
-  A developer comment in the source (`print(arr.max()); # a nice check to
-  make sure it's counts`) confirms the intended input domain.
-- Feeding our $\log_2(\text{TPM}/10+1)$ data into this pipeline would
-  produce a mathematically meaningless double-log transformation, with no
-  defensibility in the project writeup.
-- The published UCE benchmarks use the 33-layer model, which requires an
-  80 GB GPU (A100-class). This is unavailable on the project's hardware
-  (Apple Silicon Mac, no NVIDIA GPU). The 4-layer model has a lower
-  footprint but produces embeddings explicitly noted as incompatible with
-  the 33-layer benchmarks.
-- UCE thus shares the same blocker class as scVI / scANVI / count-tokenized
-  foundation models (raw-count dependence), already ruled out in
-  2026-05-19 (a).
+1. Feeding log2(TPM/10+1) values into UCE's internal log1p normalization
+   would produce a double-log-transformed input — biologically meaningless
+   relative to the model's pretraining distribution.
+2. The 33-layer UCE checkpoint requires an A100-class GPU (80 GB), which
+   is not available on this project's hardware.
+3. Even if both issues were resolved, the resulting embedding would be
+   difficult to defend methodologically in a final write-up.
+
+### Revised Stage 3 Core (3 methods, 3 families)
+- Harmony (Stage 2, completed) — linear post-PCA correction
+- Seurat RPCA — linear anchor-based integration
+- scGen — non-linear variational autoencoder
 
 ### Strategic Significance
-This is the value of running Q3.1 as a feasibility audit *before* any
-implementation: a one-day documentation review prevented an estimated
-1–2 weeks of likely-fruitless effort on UCE. The remaining three-method
-comparison is also methodologically cleaner — three distinct families
-(linear post-PCA correction / linear anchor-based / non-linear VAE) on
-the same log-input data — than four methods where one is hand-wavy.
-
-### Revised Stage 3 Scope
-| Method | Family | Status |
-|---|---|---|
-| Harmony | Linear post-PCA correction | Done (Stage 2 baseline) |
-| Seurat RPCA | Linear anchor-based | Q3.2 (next) |
-| scGen | Non-linear VAE | Q3.3 |
-| BBKNN | Graph-based (optional 4th) | Stretch — decide after Q3.3 |
-| UCE | Foundation model | **Removed from Core** — see above |
-| scVI / scANVI / scGPT / Geneformer | Count-based | Already ruled out (2026-05-19 a) |
-
-### Documentation
-Full audit: `docs/stage3_feasibility_audit.md`.
+Q3.1 feasibility audit served exactly its design purpose: prevent
+multi-week implementation cost on a method that would have failed at
+the input-format gate. This kind of pre-implementation audit is itself
+a transferable engineering skill — verifying assumptions against
+ground-truth source code before committing.

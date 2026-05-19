@@ -427,6 +427,11 @@ into engineering trouble.
 
 ## 7. Critical Open Questions (resolve before coding)
 
+> All five questions below have been resolved — see §9 Resolution Log for
+> the final decisions. The original questions are preserved as a snapshot
+> of the audit's decision state.
+
+
 | # | Question | Where to answer it |
 |---|---|---|
 | Q1 | Does writing log-TPM directly to `obj[["RNA"]]$data` and skipping `NormalizeData()` actually produce valid Seurat behavior in v5? | Quick smoke test in an R session before notebook `05`. |
@@ -454,3 +459,81 @@ into engineering trouble.
 [scgen-batch]: https://scgen.readthedocs.io/en/stable/tutorials/scgen_batch_removal.html
 [scvi-tools]: https://scvi-tools.org
 [uce-readme]: https://github.com/snap-stanford/UCE
+
+---
+
+## 9. Resolution Log
+
+> Records the final disposition of each §7 open question. Appended
+> post-audit; the §7 questions themselves are left intact as a snapshot.
+
+### Q1 — Seurat data-slot smoke test
+**Resolved: PASS (2026-05-19).** A 100 × 100 subset of the Tirosh data was
+loaded into a Seurat v5 object via `CreateSeuratObject(counts = M)` and
+the log-TPM matrix was written directly to `obj[["RNA"]]$data` with
+`obj[["RNA"]]$data <- M`. The downstream pipeline (`FindVariableFeatures`
+with `selection.method = "vst"` → `ScaleData` → `RunPCA(npcs = 10)`) ran
+without error. Validated on R 4.5.3 + Seurat 5.5.0 in conda env
+`melanoma-r`. Artifacts:
+- `scripts/smoke_test/01_prepare_subset.py` — builds the subset
+- `scripts/smoke_test/02_seurat_data_slot_test.R` — runs the test
+
+The recommended audit pattern (write log-TPM into the data slot, skip
+`NormalizeData()`) is confirmed to work. **Q3.2 may proceed.**
+
+### Q2 — scGen `n_latent` default
+**Resolved.** scGen `SCGEN.__init__` defaults inspected from the
+[source](https://github.com/theislab/scgen/blob/master/scgen/_scgen.py):
+
+| Parameter | Default | Stage 3 setting |
+|---|---|---|
+| `n_latent` | `100` | **Override to 30** for parity with Harmony / RPCA 30-dim embeddings |
+| `n_hidden` | `800` | Keep default |
+| `n_layers` | `2` | Keep default |
+| `dropout_rate` | `0.2` | Keep default |
+
+The `n_latent` override matters for the cross-method comparison
+metrics — patient silhouette and kNN purity scores depend on embedding
+dimensionality, so all three methods must share the same one.
+
+### Q3 — scGen training scope (full dataset vs. malignant-only)
+**Resolved: train on full, evaluate on malignant subset.** scGen requires
+a `labels_key` argument (per the audit's §3.3 finding); the only
+non-circular label source available to us is the Tirosh-authored coarse
+annotation (malignant flag + 6 non-malignant cell-type codes), which only
+exists at the full-dataset level. The training procedure is therefore:
+
+1. Train scGen on all 4,645 cells using `labels_key = "tirosh_celltype_coarse"`
+   and `batch_key = "patient"`.
+2. Apply `model.batch_removal()` to obtain a corrected latent for all cells.
+3. **Subset the corrected latent to the 1,257 malignant cells** before
+   running UMAP, Leiden, and cross-method comparison metrics.
+
+This is a **genuine methodological asymmetry**: Harmony and Seurat RPCA
+are fit on only the malignant subset, while scGen sees the full dataset
+during training. This difference is part of the comparison's honest
+framing — scGen's design (a labeled VAE) requires more global structure
+to anchor its latent space than the linear methods do. Stage 3's
+write-up will state this explicitly rather than try to hide it.
+
+### Q4 — Stage 3 evaluation scope
+**Resolved: malignant-only throughout.** All cross-method comparisons —
+batch-quality metrics (patient silhouette, kNN purity) *and* biological
+state recovery (Tsoi marker dotplot, Leiden clustering) — are conducted
+on the same 1,257-cell malignant subset, matching Stage 2 and
+Balderson 2024 for direct comparability.
+
+Running batch-quality metrics on the **full** dataset (general-purpose
+batch correction across heterogeneous cell types — T cells, B cells,
+macrophages, endothelial, CAFs, NKs, malignant) is **deferred to
+Stretch.** That analysis would answer a different question than the one
+driving Stage 3 (Tsoi-state recovery in malignant cells), and including
+it in Core would split focus and obscure the primary comparison.
+
+### Q5 — Decision log update strategy
+**Resolved.** A new dated entry — `2026-05-19 (b): UCE removed from Stage
+3 Core` — was added to `docs/decision_log.md`, with a revision note
+appended to the (a) entry pointing to (b). The two-entry pattern
+preserves the original decision-making sequence in the commit history
+rather than retroactively rewriting it. Final entry text was authored by
+the project lead and committed verbatim.
