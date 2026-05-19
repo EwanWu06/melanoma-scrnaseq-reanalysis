@@ -12,6 +12,10 @@
 
 ## 2026-05-19: Stage 3 Methodological Pivot
 
+> *Supersedes the earlier "data not usable" wording in commit `151704f`; that
+> phrasing was imprecise — the raw counts exist but are DUOS controlled-access.
+> CLAUDE.md and the Stage 2 report were reconciled to this entry.*
+
 ### Trigger
 Email from Dr. Itay Tirosh (2026-05-19) confirmed that raw counts for
 GSE72056 are accessible only through DUOS (Broad Institute's controlled-

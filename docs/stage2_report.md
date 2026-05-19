@@ -167,11 +167,12 @@ backgrounds; thus the "batch effect" observed here largely represents true
 patient biology rather than pure technical variance. Linear integration
 frameworks such as Harmony struggle to decouple the two (and aggressively
 increasing $\theta$ risks erasing authentic biological states). This specific
-challenge provides the motivation for Stage 3, where we will transition to
-scVI/scANVI: explicitly modeling batch as a conditional variable within a
-non-linear latent space offers a promising avenue to recover states such as
-cl3 (pt80, highest $NGFR$) that are currently submerged by patient-specific
-signatures.
+challenge provides the motivation for Stage 3, which compares integration
+methods that accept log-normalized input (Harmony, Seurat RPCA, scGen, UCE)
+for their ability to recover states such as cl3 (pt80, highest $NGFR$) that
+are currently submerged by patient-specific signatures. Count-based
+scVI/scANVI were excluded once raw counts proved DUOS controlled-access (see
+`docs/decision_log.md`).
 
 ## 5. Limitations & Future Work
 
@@ -182,11 +183,14 @@ for Harmony's $\theta$ (kept at default to maintain direct comparability with
 Balderson); (3) residual immune contamination within the "malignant" subset
 was left uncleaned, again for comparability; (4) the analysis relies on a
 single dataset (Tirosh), with cross-dataset robustness validation using the
-Jerby-Arnon dataset (GSE115978) remaining a stretch goal. Stage 3 plans to
-re-implement integration and state identification using scVI/scANVI; however,
-a technical constraint must be noted: this dataset consists of
-$\log_2(\text{TPM}/10+1)$ values rather than raw integer counts, and because
-scVI's negative-binomial likelihood requires raw counts. The raw-count request
-to Dr. Tirosh has been answered, but the returned data are not usable; this
-avenue is therefore closed, and Stage 3 will proceed via Plan B — a documented
-count-approximation step or a method that accepts log-transformed input.
+Jerby-Arnon dataset (GSE115978) remaining a stretch goal. A data-access
+constraint also reframes Stage 3: this dataset is distributed as
+$\log_2(\text{TPM}/10+1)$ values, and the GSE72056 raw counts required by
+count-based models (scVI/scANVI, negative-binomial likelihood) are available
+only through the DUOS controlled-access portal (confirmed by Dr. Tirosh,
+2026-05-19), which is not obtainable on this project's timeline. Stage 3 is
+therefore reframed as a comparison of integration methods that accept
+log-normalized input — Harmony, Seurat RPCA, scGen, UCE — for their ability
+to recover the Tsoi four-state model. This mirrors a real-world condition for
+many historical scRNA-seq datasets and is treated as part of the project's
+honest framing rather than a flaw (full rationale: `docs/decision_log.md`).

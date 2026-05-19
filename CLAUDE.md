@@ -15,9 +15,11 @@ Deep Learning Approaches on the Tirosh et al. (2016) Melanoma Single-Cell Datase
 
 **One-line description:**
 A learning-oriented re-analysis of a foundational 2016 melanoma scRNA-seq dataset
-(Tirosh et al., GSE72056), applying modern deep learning methods (scVI, scANVI,
-and potentially foundation models) and comparing results against a recent classical
-re-analysis (Balderson et al., 2024).
+(Tirosh et al., GSE72056), comparing modern integration methods that accept
+log-normalized data (Harmony, Seurat RPCA, scGen, UCE) for their ability to
+recover the Tsoi four-state model, benchmarked against a recent classical
+re-analysis (Balderson et al., 2024). Count-based scVI/scANVI were ruled out
+when raw counts proved DUOS controlled-access (see `docs/decision_log.md`).
 
 **Purpose:**
 This project is part of an undergraduate transfer application portfolio.
@@ -72,14 +74,17 @@ reproducibility over novel discovery.
 **Implications for analysis:**
 1. Do NOT apply `sc.pp.normalize_total()` or `sc.pp.log1p()` — data is already
    normalized and log-transformed.
-2. scVI, scANVI, and most foundation models **cannot directly use this data** —
-   they require raw integer counts (negative binomial-based likelihood models).
+2. scVI, scANVI, and most foundation models **cannot use this data** — they
+   require raw integer counts (negative-binomial likelihoods), which are
+   DUOS-gated for GSE72056. Stage 3 therefore does **not** use them (see
+   `docs/decision_log.md`).
 3. When selecting highly variable genes, use `sc.pp.highly_variable_genes(flavor="seurat")`
    — NOT `flavor="seurat_v3"` which requires raw counts.
-4. Plan B (**now in effect** — Dr. Tirosh's raw-count data are not usable,
-   resolved 2026-05-19): use methods that accept log-normalized data (PCA,
-   Harmony, classical Seurat workflow); scVI/scANVI in Stage 3 will require a
-   documented count-approximation step rather than true raw counts.
+4. Raw counts **exist but are DUOS controlled-access** (confirmed by Dr.
+   Tirosh, 2026-05-19); not obtainable on this project's timeline. Stage 3
+   therefore uses **integration methods that accept log-normalized data**
+   (Harmony, Seurat RPCA, scGen, UCE) — **not** count-based scVI/scANVI.
+   Authoritative rationale: `docs/decision_log.md`.
 
 **Metadata structure (rows 1-4 of the file):**
 - Row 1: Cell ID (encodes tumor + CD45 FACS sort + plate well)
@@ -98,17 +103,20 @@ reproducibility over novel discovery.
 ## Project Scope (Three Tiers)
 
 **Core (must complete):**
-Re-analyze Tirosh 2016 with 3-4 methods (classical baseline + scVI + scANVI),
-compare against Balderson 2024's four-state result. Deliverables: GitHub repo,
-technical report, dashboard.
+Re-analyze Tirosh 2016 with 3–4 log-input integration methods (classical
+baseline / Harmony + Seurat RPCA + scGen + UCE), comparing their ability to
+recover the Tsoi four states against Balderson 2024's result. (scVI/scANVI
+ruled out — counts are DUOS-gated; see `docs/decision_log.md`.) Deliverables:
+GitHub repo, technical report, dashboard.
 
 **Stretch (if time allows):**
 Extend analysis to Jerby-Arnon 2018 (GSE115978) for cross-dataset robustness
 assessment.
 
 **Reach (probably skip, documented as future work):**
-Foundation model evaluation (scGPT, Geneformer, UCE), Smart-seq2 vs 10x
-distribution shift analysis.
+Count/tokenization-based foundation models (scGPT, Geneformer — same DUOS
+raw-count constraint), Smart-seq2 vs 10x distribution shift analysis.
+*(UCE moved to Core — it accepts log-normalized input.)*
 
 ---
 
@@ -178,8 +186,9 @@ melanoma-scrnaseq-reanalysis/
 
 **What NOT to do:**
 - Do not re-normalize or re-log-transform the Tirosh data.
-- Do not attempt to run scVI / scANVI / foundation models directly on the
-  log-TPM data without addressing the count requirement.
+- Do not pursue count-based scVI / scANVI / count foundation models — raw
+  counts are DUOS-gated and out of scope (see `docs/decision_log.md`);
+  Stage 3 uses log-input integration methods only.
 - Do not commit large data files to git (`data/raw/` is gitignored).
 - Do not invent biological interpretations — defer to Tsoi 2018 markers and
   established melanoma literature.
@@ -198,14 +207,17 @@ melanoma-scrnaseq-reanalysis/
 
 ## Open Issues / TODOs
 
-- [x] Dr. Tirosh raw-count request — **resolved 2026-05-19**: replied, but the
-      data are not usable; this avenue is closed. Stage 3 commits to **Plan B**
-      (count approximation / methods that accept log-normalized input).
+- [x] Dr. Tirosh raw-count request — **resolved 2026-05-19**: Dr. Tirosh
+      replied promptly; GSE72056 raw counts **exist but are DUOS
+      controlled-access** (Broad portal), requiring institutional sponsorship
+      unavailable on this timeline. Stage 3 therefore **pivots to log-input
+      integration methods** — authoritative rationale in
+      `docs/decision_log.md` (2026-05-19 entry).
 - [ ] Update Balderson 2024 reading notes Q3/Q4 (current draft has generic limitations)
-- [ ] Stage 3 prep (scVI/scANVI): revisit Harmony theta sensitivity,
-      ultra-small patients (malignant 75=3, 65=4, 60=9, 94=10), and immune
-      contamination — all documented as Stage 2 limitations in
-      `docs/stage2_report.md`
+- [ ] Stage 3 prep (log-input integration: Harmony / Seurat RPCA / scGen /
+      UCE): revisit Harmony theta sensitivity, ultra-small patients
+      (malignant 75=3, 65=4, 60=9, 94=10), and immune contamination — all
+      documented as Stage 2 limitations in `docs/stage2_report.md`
 
 ---
 
