@@ -134,8 +134,9 @@ four-state model** (*Cancer Cell* 33:890-904):
 
 **Balderson et al. 2024** (BFG, elad055) already re-analyzed Tirosh 2016 with
 classical methods (PCA + Monocle) and recovered these four states. Our project's
-novelty is **applying deep learning methods** to the same dataset and benchmarking
-against this classical result.
+novelty is **applying modern log-input integration methods** (including a
+foundation model embedding, UCE) to the same dataset and benchmarking against
+this classical result.
 
 ---
 
