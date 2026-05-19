@@ -8,6 +8,7 @@ dependencies:
   - scanpy
   - anndata
   - scvi-tools
+  - harmonypy        # batch integration (Q2.3); bioconda, pulls cpu pytorch
   - leidenalg
   - louvain
   - python-igraph
