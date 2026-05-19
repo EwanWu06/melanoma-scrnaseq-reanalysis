@@ -50,6 +50,7 @@ ipython_config.py
 # ---- Local-only personal copies (Chinese study notes; never publish) ----
 notebooks/.local_zh/
 docs/literature/.private/
+docs/.private/
 
 # ---- Testing / coverage ----
 .pytest_cache/
