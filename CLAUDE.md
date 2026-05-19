@@ -2,7 +2,7 @@
 
 > This file provides project-specific context for Claude Code.
 > It is automatically loaded when Claude Code operates within this repository.
-> Updated: 2026-05-19
+> Updated: 2026-05-19 (post Q3.1 feasibility audit)
 
 ---
 
@@ -15,11 +15,12 @@ Deep Learning Approaches on the Tirosh et al. (2016) Melanoma Single-Cell Datase
 
 **One-line description:**
 A learning-oriented re-analysis of a foundational 2016 melanoma scRNA-seq dataset
-(Tirosh et al., GSE72056), comparing modern integration methods that accept
-log-normalized data (Harmony, Seurat RPCA, scGen, UCE) for their ability to
-recover the Tsoi four-state model, benchmarked against a recent classical
-re-analysis (Balderson et al., 2024). Count-based scVI/scANVI were ruled out
-when raw counts proved DUOS controlled-access (see `docs/decision_log.md`).
+(Tirosh et al., GSE72056), comparing three integration methods that accept
+log-normalized data (Harmony, Seurat RPCA, scGen) for their ability to recover
+the Tsoi four-state model, benchmarked against a recent classical re-analysis
+(Balderson et al., 2024). Count-based methods (scVI / scANVI / UCE /
+count-tokenized foundation models) were ruled out — raw counts are DUOS
+controlled-access (see `docs/decision_log.md`).
 
 **Purpose:**
 This project is part of an undergraduate transfer application portfolio.
@@ -74,16 +75,18 @@ reproducibility over novel discovery.
 **Implications for analysis:**
 1. Do NOT apply `sc.pp.normalize_total()` or `sc.pp.log1p()` — data is already
    normalized and log-transformed.
-2. scVI, scANVI, and most foundation models **cannot use this data** — they
-   require raw integer counts (negative-binomial likelihoods), which are
-   DUOS-gated for GSE72056. Stage 3 therefore does **not** use them (see
-   `docs/decision_log.md`).
+2. scVI, scANVI, UCE, and most count-tokenized foundation models
+   (scGPT / Geneformer) **cannot use this data** — they require raw integer
+   counts (negative-binomial likelihoods or count-derived gene sentences),
+   which are DUOS-gated for GSE72056. Stage 3 therefore does **not** use
+   them. UCE specifically was ruled out by Q3.1 feasibility audit (see
+   `docs/decision_log.md` and `docs/stage3_feasibility_audit.md`).
 3. When selecting highly variable genes, use `sc.pp.highly_variable_genes(flavor="seurat")`
    — NOT `flavor="seurat_v3"` which requires raw counts.
 4. Raw counts **exist but are DUOS controlled-access** (confirmed by Dr.
    Tirosh, 2026-05-19); not obtainable on this project's timeline. Stage 3
    therefore uses **integration methods that accept log-normalized data**
-   (Harmony, Seurat RPCA, scGen, UCE) — **not** count-based scVI/scANVI.
+   (Harmony, Seurat RPCA, scGen) — **not** count-based scVI / scANVI / UCE.
    Authoritative rationale: `docs/decision_log.md`.
 
 **Metadata structure (rows 1-4 of the file):**
@@ -103,20 +106,88 @@ reproducibility over novel discovery.
 ## Project Scope (Three Tiers)
 
 **Core (must complete):**
-Re-analyze Tirosh 2016 with 3–4 log-input integration methods (classical
-baseline / Harmony + Seurat RPCA + scGen + UCE), comparing their ability to
-recover the Tsoi four states against Balderson 2024's result. (scVI/scANVI
-ruled out — counts are DUOS-gated; see `docs/decision_log.md`.) Deliverables:
-GitHub repo, technical report, dashboard.
+Re-analyze Tirosh 2016 with three log-input integration methods spanning
+three method families: **Harmony** (linear post-PCA correction — Stage 2
+baseline), **Seurat RPCA** (linear anchor-based), and **scGen** (non-linear
+VAE). Compare their ability to recover the Tsoi four states against
+Balderson 2024's result. (scVI / scANVI / UCE ruled out — counts are
+DUOS-gated; see `docs/decision_log.md`.) Deliverables: GitHub repo,
+technical report, dashboard.
 
 **Stretch (if time allows):**
-Extend analysis to Jerby-Arnon 2018 (GSE115978) for cross-dataset robustness
-assessment.
+- Add **BBKNN** as a fourth method (graph-based batch correction, accepts
+  log-input, no GPU) — decision deferred until Q3.3 finishes.
+- Extend analysis to Jerby-Arnon 2018 (GSE115978) for cross-dataset
+  robustness assessment.
 
 **Reach (probably skip, documented as future work):**
-Count/tokenization-based foundation models (scGPT, Geneformer — same DUOS
-raw-count constraint), Smart-seq2 vs 10x distribution shift analysis.
-*(UCE moved to Core — it accepts log-normalized input.)*
+Count- and count-tokenization-based foundation models (**scGPT, Geneformer,
+UCE**) — same DUOS raw-count constraint. UCE specifically was investigated
+in Q3.1 and ruled out (also requires A100-class GPU). Smart-seq2 vs 10x
+distribution shift analysis.
+
+---
+
+## Stage 3 Working Spec
+
+> Frozen 2026-05-19 (post Q3.1 feasibility audit). Used by Claude Code as
+> the authoritative spec for Stage 3 implementation work.
+
+**Headline:** Method comparison on log-normalized data.
+
+**Core methods (three families, three implementations):**
+
+| # | Method | Family | Status |
+|---|---|---|---|
+| 1 | Harmony | Linear post-PCA correction | Done (Stage 2 baseline) |
+| 2 | Seurat RPCA | Linear anchor-based | Q3.2 next |
+| 3 | scGen | Non-linear VAE | Q3.3 after |
+
+**Stretch:**
+- BBKNN (4th method, graph-based) — decide after Q3.3 completes.
+
+**Removed from Core:**
+- UCE — raw-count blocker (see `docs/decision_log.md` 2026-05-19 (b) and
+  `docs/stage3_feasibility_audit.md`).
+
+**Evaluation scope:** malignant-only subset (1,257 cells), consistent
+with Stage 2 and Balderson 2024.
+
+**Embedding dimensions:** 30 dimensions across all methods (parity with
+Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).
+
+**Evaluation metrics (Stage 3 comparison notebook):**
+- **A. Batch integration quality**
+  - A1. Patient silhouette score on the integrated embedding (lower = better)
+  - A2. kNN patient purity (lower = better)
+- **B. Biological state recovery**
+  - Per-method Tsoi marker dotplot on Leiden clusters (parallels Stage 2
+    notebook 04 methodology)
+  - Count of Tsoi states robustly identified vs. likely-batch-artifact
+    clusters
+
+**scGen-specific procedure (deviation from RPCA / Harmony):**
+- Train scGen on the **full** dataset (4,645 cells) using **Tirosh-authored
+  coarse labels** as `labels_key` (malignant flag + 6 non-malignant cell
+  type codes). This avoids the circularity of using Stage 2's Tsoi-state
+  assignments as input.
+- After training, **subset the corrected latent to malignant cells** for
+  the cross-method evaluation, restoring parity with RPCA / Harmony's
+  malignant-only analysis.
+- Set `n_latent = 30` explicitly to match the other methods'
+  dimensionality.
+
+**Implementation order (notebook layout):**
+- `notebooks/05_seurat_rpca.ipynb` — Q3.2 (R kernel; Seurat v5; AnnData ↔ Seurat conversion documented in-notebook)
+- `notebooks/06_scgen.ipynb` — Q3.3 (Python; scGen with coarse-label setup)
+- `notebooks/07_bbknn.ipynb` — Stretch (optional)
+- `notebooks/08_method_comparison.ipynb` — Cross-method evaluation (A1, A2, Tsoi recovery, ARI/NMI between methods)
+
+**Environment:** Stage 3 introduces a second conda env `melanoma-r` for
+the R/Seurat workflow. The Python env `melanoma-scrnaseq` remains the
+analysis driver; data exchange between R and Python happens via files
+(CSV or AnnData h5ad) — no in-process bridge required for the smoke
+test, with `anndata2ri` reserved for the Q3.2 main notebook if needed.
 
 ---
 
@@ -134,9 +205,10 @@ four-state model** (*Cancer Cell* 33:890-904):
 
 **Balderson et al. 2024** (BFG, elad055) already re-analyzed Tirosh 2016 with
 classical methods (PCA + Monocle) and recovered these four states. Our project's
-novelty is **applying modern log-input integration methods** (including a
-foundation model embedding, UCE) to the same dataset and benchmarking against
-this classical result.
+novelty is **applying modern log-input integration methods across three
+different families** (linear post-PCA correction / linear anchor-based /
+non-linear VAE) to the same dataset and benchmarking against this classical
+result.
 
 ---
 
@@ -215,10 +287,16 @@ melanoma-scrnaseq-reanalysis/
       integration methods** — authoritative rationale in
       `docs/decision_log.md` (2026-05-19 entry).
 - [ ] Update Balderson 2024 reading notes Q3/Q4 (current draft has generic limitations)
-- [ ] Stage 3 prep (log-input integration: Harmony / Seurat RPCA / scGen /
-      UCE): revisit Harmony theta sensitivity, ultra-small patients
-      (malignant 75=3, 65=4, 60=9, 94=10), and immune contamination — all
-      documented as Stage 2 limitations in `docs/stage2_report.md`
+- [x] Stage 3 Q3.1 — feasibility audit complete (`docs/stage3_feasibility_audit.md`);
+      UCE removed from Core (raw-count blocker, A100 GPU requirement)
+- [ ] Stage 3 Q3.2 — Seurat RPCA on Tirosh malignant cells (after R-env
+      smoke test passes)
+- [ ] Stage 3 Q3.3 — scGen with Tirosh coarse labels (`labels_key`),
+      `n_latent = 30` for parity
+- [ ] Stage 3 carryover from Stage 2: revisit Harmony theta sensitivity,
+      ultra-small patients (malignant 75=3, 65=4, 60=9, 94=10), and immune
+      contamination — all documented as Stage 2 limitations in
+      `docs/stage2_report.md`
 
 ---
 

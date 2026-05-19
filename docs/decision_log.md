@@ -52,3 +52,63 @@ only normalized expression is publicly available.
 ### Documentation
 Original Tirosh email saved at docs/.private/correspondence/
 (gitignored — contains personal contact information).
+
+> **Note:** Revised by 2026-05-19 (b) entry below — UCE was later ruled out
+> after the Q3.1 feasibility audit; Stage 3 Core narrowed from four methods
+> to three (Harmony / Seurat RPCA / scGen).
+
+---
+
+## 2026-05-19 (b): UCE Removed from Stage 3 Core
+
+### Trigger
+Q3.1 feasibility audit (`docs/stage3_feasibility_audit.md`) reviewed live
+documentation and source code for each candidate Stage 3 integration method
+(Seurat RPCA, scGen, UCE) before any implementation began. The audit
+surfaced a compatibility problem with UCE that contradicts the assumption
+made in the 2026-05-19 (a) decision.
+
+### Decision
+Remove UCE from Stage 3 Core. Stage 3 proceeds with three integration
+methods: Harmony (Stage 2 baseline), Seurat RPCA, and scGen. UCE is
+documented as "investigated but ruled out" under the same blocker class as
+scVI / scANVI.
+
+### Reason
+- The UCE README specifies `.X` must contain scRNA-seq counts. The
+  `data_proc/` preprocessing source applies an internal
+  `log1p(x / sum(x) * 1000)` normalization that assumes count-scale input.
+  A developer comment in the source (`print(arr.max()); # a nice check to
+  make sure it's counts`) confirms the intended input domain.
+- Feeding our $\log_2(\text{TPM}/10+1)$ data into this pipeline would
+  produce a mathematically meaningless double-log transformation, with no
+  defensibility in the project writeup.
+- The published UCE benchmarks use the 33-layer model, which requires an
+  80 GB GPU (A100-class). This is unavailable on the project's hardware
+  (Apple Silicon Mac, no NVIDIA GPU). The 4-layer model has a lower
+  footprint but produces embeddings explicitly noted as incompatible with
+  the 33-layer benchmarks.
+- UCE thus shares the same blocker class as scVI / scANVI / count-tokenized
+  foundation models (raw-count dependence), already ruled out in
+  2026-05-19 (a).
+
+### Strategic Significance
+This is the value of running Q3.1 as a feasibility audit *before* any
+implementation: a one-day documentation review prevented an estimated
+1–2 weeks of likely-fruitless effort on UCE. The remaining three-method
+comparison is also methodologically cleaner — three distinct families
+(linear post-PCA correction / linear anchor-based / non-linear VAE) on
+the same log-input data — than four methods where one is hand-wavy.
+
+### Revised Stage 3 Scope
+| Method | Family | Status |
+|---|---|---|
+| Harmony | Linear post-PCA correction | Done (Stage 2 baseline) |
+| Seurat RPCA | Linear anchor-based | Q3.2 (next) |
+| scGen | Non-linear VAE | Q3.3 |
+| BBKNN | Graph-based (optional 4th) | Stretch — decide after Q3.3 |
+| UCE | Foundation model | **Removed from Core** — see above |
+| scVI / scANVI / scGPT / Geneformer | Count-based | Already ruled out (2026-05-19 a) |
+
+### Documentation
+Full audit: `docs/stage3_feasibility_audit.md`.

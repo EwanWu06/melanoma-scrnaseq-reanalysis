@@ -9,13 +9,21 @@ transcriptional programs associated with the disease.
 - [x] Stage 0: Setup & Foundation
 - [x] Stage 1: Foundation Building
 - [x] Stage 2: Classical Pipeline Replication
-- [ ] Stage 3: Deep Learning Methods Application
+- [x] Stage 3 Q3.1: Feasibility audit ([`docs/stage3_feasibility_audit.md`](docs/stage3_feasibility_audit.md))
+- [ ] Stage 3: Method comparison on log-normalized data (Harmony + Seurat RPCA + scGen)
 - [ ] Stage 4: Synthesis & Deliverables
 
 **Stage 2 complete:** the classical pipeline (QC → HVG → PCA → Harmony → Leiden)
 re-analyzed the Tirosh malignant cells; only 2 of Tsoi's 4 states (Melanocytic,
 Undifferentiated) were robustly recovered — full write-up in
 [`docs/stage2_report.md`](docs/stage2_report.md).
+
+**Stage 3 Q3.1 (feasibility audit) complete:** UCE removed from Core methods
+after live source-code review confirmed its preprocessing pipeline assumes
+raw counts (same blocker class as scVI / scANVI). Stage 3 proceeds with
+three methods spanning three families — Harmony (linear post-PCA), Seurat
+RPCA (linear anchor-based), and scGen (non-linear VAE). Decision rationale
+in [`docs/decision_log.md`](docs/decision_log.md) (2026-05-19 b).
 
 ## Environment setup
 
