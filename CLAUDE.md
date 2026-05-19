@@ -30,7 +30,7 @@ reproducibility over novel discovery.
 
 ## Current Stage
 
-**Active stage:** Stage 1 — Foundation Building (literature comprehension)
+**Active stage:** Stage 2 — Classical Pipeline Replication (Q2.1–Q2.2 done; Q2.3 Harmony next)
 
 **Stage progression:**
 - [x] Stage 0: Setup & Foundation
@@ -38,8 +38,12 @@ reproducibility over novel discovery.
   - [x] Tirosh 2016 data downloaded (GSE72056)
   - [x] Initial correspondence with Dr. Tirosh sent
   - [x] Core literature read (Tirosh 2016, Tsoi 2018, Balderson 2024, Heumos 2023)
-- [ ] Stage 1: Foundation Building
+- [x] Stage 1: Foundation Building
 - [ ] Stage 2: Classical Pipeline Replication
+  - [x] Q2.1: Data loading + AnnData + basic QC (notebook 01)
+  - [x] Q2.2: HVG selection + PCA + batch-effect diagnostic (notebook 02)
+  - [ ] Q2.3: Harmony batch correction
+  - [ ] Q2.4+: Leiden clustering + Tsoi 4-state annotation
 - [ ] Stage 3: Deep Learning Methods Application
 - [ ] Stage 4: Synthesis & Deliverables
 - [ ] Stretch: Cross-dataset Robustness (Jerby-Arnon GSE115978)
@@ -193,7 +197,11 @@ melanoma-scrnaseq-reanalysis/
 
 - [ ] Confirm whether Dr. Tirosh can provide raw count matrix (email sent 2026-05-17)
 - [ ] Update Balderson 2024 reading notes Q3/Q4 (current draft has generic limitations)
-- [ ] Implement Stage 2: Scanpy QC pipeline replication
+- [ ] Q2.3: Harmony batch correction — 15 patient batches (not 19); decide
+      ultra-small-patient handling (malignant cells: 75=3, 65=4, 60=9, 94=10)
+- [ ] Decide handling of immune contamination in Tirosh "malignant" cells
+      (top HVGs are immune genes) — kept as documented limitation for now to
+      preserve Balderson 2024 comparability; revisit after Q2.3
 
 ---
 
