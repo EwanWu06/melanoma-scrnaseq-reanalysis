@@ -415,9 +415,9 @@ and currently more actively maintained than mnnpy.
    `labels_key`. Output: corrected latent + UMAP + Leiden + dotplot.
 3. **Notebook `07`** (optional) — BBKNN if pursuing the 4th-method
    stretch.
-4. **Notebook `08`** — Cross-method comparison: Tsoi state recovery,
-   silhouette by patient, kNN patient purity, agreement between methods
-   (ARI / NMI of cluster assignments).
+4. **Notebook `08`** — Cross-method comparison: metrics A1/A2/B1/B2/C1/C2
+   per the CLAUDE.md Stage 3 Working Spec, plus cross-method cluster
+   agreement metrics (final choice TBD in notebook 08).
 
 This staged order ensures each method is fully validated before the next
 is added, and the cross-method comparison can begin even if scGen runs
@@ -518,10 +518,11 @@ write-up will state this explicitly rather than try to hide it.
 
 ### Q4 — Stage 3 evaluation scope
 **Resolved: malignant-only throughout.** All cross-method comparisons —
-batch-quality metrics (patient silhouette, kNN purity) *and* biological
-state recovery (Tsoi marker dotplot, Leiden clustering) — are conducted
-on the same 1,257-cell malignant subset, matching Stage 2 and
-Balderson 2024 for direct comparability.
+all three metric categories per the CLAUDE.md Stage 3 Working Spec
+(A. batch integration quality, B. biological signal preservation,
+C. cell state recovery) — are conducted on the same 1,257-cell
+malignant subset, matching Stage 2 and Balderson 2024 for direct
+comparability.
 
 Running batch-quality metrics on the **full** dataset (general-purpose
 batch correction across heterogeneous cell types — T cells, B cells,
