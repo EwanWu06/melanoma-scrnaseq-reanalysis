@@ -84,7 +84,16 @@ based), not in expression space. Output is a corrected cell embedding —
 # ============================================================================
 md("## Phase 1 — Load and validate")
 
-code(r"""# Library imports + version sanity check
+code(r"""# CWD guard - ensure consistent path resolution regardless of launch dir.
+# jupyter nbconvert starts the kernel in the notebook's directory (notebooks/);
+# jumping up one level matches the project-root-relative path convention used
+# in the smoke test and all data/results references below.
+if (basename(getwd()) == "notebooks") {
+  setwd("..")
+}
+cat("Working directory:", getwd(), "\n")
+
+# Library imports + version sanity check
 suppressPackageStartupMessages({
   library(Seurat)
   library(SeuratObject)
