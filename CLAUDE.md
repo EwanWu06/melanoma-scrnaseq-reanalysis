@@ -161,37 +161,49 @@ cell types) than the Tsoi-recovery question driving Stage 3.
 Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).
 
 **Evaluation metrics (Stage 3 comparison notebook):**
-- **A. Batch integration quality**
-  - A1. Patient silhouette score on the integrated embedding (lower = better)
-  - A2. kNN patient purity (lower = better)
-- **B. Biological state recovery**
-  - Per-method Tsoi marker dotplot on Leiden clusters (parallels Stage 2
-    notebook 04 methodology)
-  - Count of Tsoi states robustly identified vs. likely-batch-artifact
-    clusters
 
-**scGen-specific procedure (deviation from RPCA / Harmony):**
-- Train scGen on the **full** dataset (4,645 cells) using **Tirosh-authored
-  coarse labels** as `labels_key` (malignant flag + 6 non-malignant cell
-  type codes). This avoids the circularity of using Stage 2's Tsoi-state
-  assignments as input.
-- After training, **subset the corrected latent to malignant cells** for
-  the cross-method evaluation, restoring parity with RPCA / Harmony's
-  malignant-only analysis.
-- Set `n_latent = 30` explicitly to match the other methods'
-  dimensionality.
+- **A. Batch Integration Quality**
+  - A1: Patient silhouette score on integrated embedding (lower = better mixing)
+  - A2: kNN patient purity (lower = better mixing; theoretical baseline
+    depends on patient size distribution)
+- **B. Biological Signal Preservation**
+  - B1: Cluster-level expression of canonical markers (MITF / SOX10 / NGFR / AXL)
+    visualized as dotplot per resolution
+  - B2: Tsoi state silhouette score on integrated embedding (higher = states
+    more separable)
+- **C. Cell State Recovery**
+  - C1: Manual annotation — per-method Leiden clustering + Tsoi state
+    assignment, following Stage 2 Q2.4 procedure (no algorithmic state
+    assignment)
+  - C2: Number of biologically interpretable Tsoi states recovered + number
+    of patient-driven (batch artifact) clusters identified
+
+**scGen-specific procedure (not a separate metric category):**
+
+- Trained on the full dataset (all 4,645 cells) using coarse Tirosh-authored
+  labels as `labels_key` (malignant flag + 6 non-malignant cell type codes).
+- Evaluated on the malignant subset (1,257 cells) — embedding subsetted
+  downstream for fair comparison with Harmony / RPCA.
+- `n_latent = 30`, matching Harmony / RPCA dimensionality for direct
+  silhouette comparability.
 
 **Implementation order (notebook layout):**
 - `notebooks/05_seurat_rpca.ipynb` — Q3.2 (R kernel; Seurat v5; AnnData ↔ Seurat conversion documented in-notebook)
 - `notebooks/06_scgen.ipynb` — Q3.3 (Python; scGen with coarse-label setup)
 - `notebooks/07_bbknn.ipynb` — Stretch (optional)
-- `notebooks/08_method_comparison.ipynb` — Cross-method evaluation (A1, A2, Tsoi recovery, ARI/NMI between methods)
+- `notebooks/08_method_comparison.ipynb` — Cross-method evaluation:
+  metrics A1/A2/B1/B2/C1/C2, plus cross-method cluster agreement metrics
+  (specific choice — e.g. ARI, NMI, or alternative — to be finalized in
+  notebook 08)
 
 **Environment:** Stage 3 introduces a second conda env `melanoma-r` for
 the R/Seurat workflow. The Python env `melanoma-scrnaseq` remains the
 analysis driver; data exchange between R and Python happens via files
-(CSV or AnnData h5ad) — no in-process bridge required for the smoke
-test, with `anndata2ri` reserved for the Q3.2 main notebook if needed.
+(CSV or AnnData h5ad).
+
+> *Note: the `melanoma-r` conda environment was set up during the Q3.1
+> Seurat smoke test as the cleanest path for R/Seurat work; this spec
+> documents it retroactively.*
 
 ---
 
