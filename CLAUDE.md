@@ -76,8 +76,10 @@ reproducibility over novel discovery.
    they require raw integer counts (negative binomial-based likelihood models).
 3. When selecting highly variable genes, use `sc.pp.highly_variable_genes(flavor="seurat")`
    — NOT `flavor="seurat_v3"` which requires raw counts.
-4. Plan B (if raw counts cannot be obtained from Dr. Tirosh): use methods that
-   accept log-normalized data (PCA, Harmony, classical Seurat workflow).
+4. Plan B (**now in effect** — Dr. Tirosh's raw-count data are not usable,
+   resolved 2026-05-19): use methods that accept log-normalized data (PCA,
+   Harmony, classical Seurat workflow); scVI/scANVI in Stage 3 will require a
+   documented count-approximation step rather than true raw counts.
 
 **Metadata structure (rows 1-4 of the file):**
 - Row 1: Cell ID (encodes tumor + CD45 FACS sort + plate well)
@@ -196,8 +198,9 @@ melanoma-scrnaseq-reanalysis/
 
 ## Open Issues / TODOs
 
-- [ ] Confirm whether Dr. Tirosh can provide raw count matrix (email sent
-      2026-05-17; **awaiting reply**) — gates scVI/scANVI count likelihood in Stage 3
+- [x] Dr. Tirosh raw-count request — **resolved 2026-05-19**: replied, but the
+      data are not usable; this avenue is closed. Stage 3 commits to **Plan B**
+      (count approximation / methods that accept log-normalized input).
 - [ ] Update Balderson 2024 reading notes Q3/Q4 (current draft has generic limitations)
 - [ ] Stage 3 prep (scVI/scANVI): revisit Harmony theta sensitivity,
       ultra-small patients (malignant 75=3, 65=4, 60=9, 94=10), and immune

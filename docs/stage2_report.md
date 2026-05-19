@@ -186,7 +186,7 @@ Jerby-Arnon dataset (GSE115978) remaining a stretch goal. Stage 3 plans to
 re-implement integration and state identification using scVI/scANVI; however,
 a technical constraint must be noted: this dataset consists of
 $\log_2(\text{TPM}/10+1)$ values rather than raw integer counts, and because
-scVI's negative-binomial likelihood requires raw counts, the prerequisite for
-Stage 3 is to obtain the original count matrix from Dr. Tirosh (email request
-sent) or, alternatively, to implement a Plan B using count approximation or a
-method that accepts log-transformed input.
+scVI's negative-binomial likelihood requires raw counts. The raw-count request
+to Dr. Tirosh has been answered, but the returned data are not usable; this
+avenue is therefore closed, and Stage 3 will proceed via Plan B — a documented
+count-approximation step or a method that accepts log-transformed input.
