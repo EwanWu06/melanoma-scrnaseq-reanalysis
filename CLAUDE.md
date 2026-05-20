@@ -16,11 +16,11 @@ Deep Learning Approaches on the Tirosh et al. (2016) Melanoma Single-Cell Datase
 **One-line description:**
 A learning-oriented re-analysis of a foundational 2016 melanoma scRNA-seq dataset
 (Tirosh et al., GSE72056), comparing three integration methods that accept
-log-normalized data (Harmony, Seurat RPCA, scGen) for their ability to recover
-the Tsoi four-state model, benchmarked against a recent classical re-analysis
-(Balderson et al., 2024). Count-based methods (scVI / scANVI / UCE /
-count-tokenized foundation models) were ruled out — raw counts are DUOS
-controlled-access (see `docs/decision_log.md`).
+log-normalized data (Harmony, Scanorama as RPCA-family integration, scGen) for
+their ability to recover the Tsoi four-state model, benchmarked against a recent
+classical re-analysis (Balderson et al., 2024). Count-based methods (scVI /
+scANVI / UCE / count-tokenized foundation models) were ruled out — raw counts
+are DUOS controlled-access (see `docs/decision_log.md`).
 
 **Purpose:**
 This project is part of an undergraduate transfer application portfolio.
@@ -108,11 +108,13 @@ reproducibility over novel discovery.
 **Core (must complete):**
 Re-analyze Tirosh 2016 with three log-input integration methods spanning
 three method families: **Harmony** (linear post-PCA correction — Stage 2
-baseline), **Seurat RPCA** (linear anchor-based), and **scGen** (non-linear
-VAE). Compare their ability to recover the Tsoi four states against
-Balderson 2024's result. (scVI / scANVI / UCE ruled out — counts are
-DUOS-gated; see `docs/decision_log.md`.) Deliverables: GitHub repo,
-technical report, dashboard.
+baseline), **Scanorama** (RPCA-family / linear anchor-based, MNN in PCA
+space; replaces the originally-planned Seurat RPCA — see
+`docs/decision_log.md` 2026-05-19 (c)), and **scGen** (non-linear VAE).
+Compare their ability to recover the Tsoi four states against Balderson
+2024's result. (scVI / scANVI / UCE ruled out — counts are DUOS-gated;
+see `docs/decision_log.md`.) Deliverables: GitHub repo, technical
+report, dashboard.
 
 **Stretch (if time allows):**
 - Add **BBKNN** as a fourth method (graph-based batch correction, accepts
@@ -140,7 +142,7 @@ distribution shift analysis.
 | # | Method | Family | Status |
 |---|---|---|---|
 | 1 | Harmony | Linear post-PCA correction | Done (Stage 2 baseline) |
-| 2 | Seurat RPCA | Linear anchor-based | Q3.2 next |
+| 2 | Scanorama (RPCA-family) | Linear anchor-based, MNN in PCA space | Q3.2 — Python; replaces the historical Seurat RPCA attempt (see decision_log 2026-05-19 (c)) |
 | 3 | scGen | Non-linear VAE | Q3.3 after |
 
 **Stretch:**
@@ -188,7 +190,7 @@ Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).
   silhouette comparability.
 
 **Implementation order (notebook layout):**
-- `notebooks/05_seurat_rpca.ipynb` — Q3.2 (R kernel; Seurat v5; AnnData ↔ Seurat conversion documented in-notebook)
+- `notebooks/05_rpca.ipynb` — Q3.2 (Python; Scanorama as RPCA-family integration)
 - `notebooks/06_scgen.ipynb` — Q3.3 (Python; scGen with coarse-label setup)
 - `notebooks/07_bbknn.ipynb` — Stretch (optional)
 - `notebooks/08_method_comparison.ipynb` — Cross-method evaluation:
@@ -196,14 +198,21 @@ Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).
   (specific choice — e.g. ARI, NMI, or alternative — to be finalized in
   notebook 08)
 
-**Environment:** Stage 3 introduces a second conda env `melanoma-r` for
-the R/Seurat workflow. The Python env `melanoma-scrnaseq` remains the
-analysis driver; data exchange between R and Python happens via files
-(CSV or AnnData h5ad).
+> *Historical: `notebooks/05_seurat_rpca.ipynb` + `scripts/build_notebook_05.py`
+> are preserved in git as the record of the attempted R-side Seurat RPCA
+> implementation; not used going forward (see decision_log 2026-05-19 (c)).*
 
-> *Note: the `melanoma-r` conda environment was set up during the Q3.1
-> Seurat smoke test as the cleanest path for R/Seurat work; this spec
-> documents it retroactively.*
+**Environment:** All three Stage 3 Core methods now run in the existing
+`melanoma-scrnaseq` conda env (Python 3.11 + scanpy + scvi-tools +
+scanorama). New dependency added for Q3.2: `scanorama` (pip-installed;
+recorded in `environment.yml`).
+
+> *Historical: a separate `melanoma-r` conda env (R 4.5.3 + Seurat 5.5.0
+> + IRkernel + zellkonverter) was provisioned during Q3.1 for the
+> originally-planned Seurat RPCA path. After the implementation attempt
+> hit R-Python bridge fragility (see decision_log 2026-05-19 (c)), Q3.2
+> switched to Scanorama and the R env became unused for current work.
+> The env is left installed and available for any future R-only method.*
 
 ---
 
@@ -312,8 +321,9 @@ regeneration. To modify the notebook, edit the build script and re-run
 - [ ] Update Balderson 2024 reading notes Q3/Q4 (current draft has generic limitations)
 - [x] Stage 3 Q3.1 — feasibility audit complete (`docs/stage3_feasibility_audit.md`);
       UCE removed from Core (raw-count blocker, A100 GPU requirement)
-- [ ] Stage 3 Q3.2 — Seurat RPCA on Tirosh malignant cells (after R-env
-      smoke test passes)
+- [ ] Stage 3 Q3.2 — Scanorama (RPCA-family integration, Python) on Tirosh
+      malignant cells; replaces the originally-planned Seurat RPCA (see
+      `docs/decision_log.md` 2026-05-19 (c))
 - [ ] Stage 3 Q3.3 — scGen with Tirosh coarse labels (`labels_key`),
       `n_latent = 30` for parity
 - [ ] Stage 3 carryover from Stage 2: revisit Harmony theta sensitivity,

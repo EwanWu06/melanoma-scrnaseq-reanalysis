@@ -99,3 +99,107 @@ multi-week implementation cost on a method that would have failed at
 the input-format gate. This kind of pre-implementation audit is itself
 a transferable engineering skill — verifying assumptions against
 ground-truth source code before committing.
+
+---
+
+## 2026-05-19 (c): Switch Stage 3 Q3.2 from Seurat RPCA (R) to Scanorama (Python)
+
+> *This entry refines the Stage 3 Core set by 2026-05-19 (b). Following an
+> implementation attempt of the Seurat RPCA pipeline that the Q3.1
+> feasibility audit had cleared, the R-Python bridge proved fragile in a
+> way the paper audit did not anticipate. The method-family slot is
+> preserved by switching to Scanorama — a Python-native RPCA-equivalent
+> that lives in the same algorithm family but in the project's already-
+> validated Python stack.*
+
+### Trigger
+First execution of `notebooks/05_seurat_rpca.ipynb` (R kernel
+`ir-melanoma`, conda env `melanoma-r`) via `jupyter nbconvert` triggered
+R's `reticulate` package — pulled in transitively by `zellkonverter` and
+the R `anndata` wrapper — to auto-provision a private Python interpreter
+via `pyenv`, downloading and source-building Python 3.14.0 along with
+openssl-3.6.0 and readline-8.3. The provisioning exceeded nbconvert's
+300-second cell timeout (Cell 3, `zellkonverter::readH5AD`) and left an
+orphaned `~/.pyenv/versions/3.14.0/` directory. Diagnostic inspection
+also surfaced reticulate's modern provisioning mechanism, which creates
+a parallel uv-managed Python under `~/Library/Caches/.../reticulate/uv/`.
+The R-side pipeline therefore requires multi-step Python-provisioning
+intervention before the Tirosh data even loads.
+
+### Decision
+Switch the Stage 3 Q3.2 implementation from **Seurat v5 RPCA** (R) to
+**Scanorama** (Hie et al. 2019, *Nature Biotechnology* —
+[github.com/brianhie/scanorama](https://github.com/brianhie/scanorama)).
+Scanorama is the same method family as Seurat RPCA — mutual-nearest-
+neighbors anchoring in batch-split PCA space — implemented natively for
+the scanpy stack. It runs entirely in the project's existing
+`melanoma-scrnaseq` conda env with a single `pip install scanorama`.
+
+Naming convention going forward:
+- Notebook: `notebooks/05_rpca.ipynb` (replaces the historical
+  `05_seurat_rpca.ipynb`, which is preserved as a record of the
+  attempted R-side path)
+- `adata.obsm` key: `X_rpca` (preserves downstream notebook 08
+  cross-method comparison contract)
+- Method label in CLAUDE.md spec, audit doc updates, and the final
+  write-up: **"RPCA-family integration (Scanorama)"** — implementation
+  is named explicitly so the framework choice is honest in reporting.
+
+### Reason
+1. The R-Python bridge fragility — discovered at runtime, not at audit
+   time — represents an open-ended environment-setup cost (manual Python
+   provisioning, reticulate reconfiguration, possible repeat across
+   sessions) with no methodological return. The same RPCA-family
+   integration is available natively in Python.
+2. The `melanoma-scrnaseq` env already hosts the full required stack
+   (scanpy, anndata, numpy, scikit-learn) and is the same env that
+   Q3.3 scGen will use. Single-env Q3.2 + Q3.3 is operationally simpler.
+3. Scanorama is widely cited in the scanpy / scvi-tools integration-
+   benchmark literature, so the cross-method comparison narrative remains
+   defensible.
+4. The Q3.1 audit's core conclusions still stand — the audit was a
+   *paper-feasibility* check, and Scanorama satisfies the same gates
+   (accepts log-normalized input, no GPU required, supports explicit
+   batch key, runs on the project's hardware).
+
+### Method-family note (for the final write-up)
+Stage 3 still spans three method families and three implementations:
+
+| Family | Implementation (Stage 3) |
+|---|---|
+| Linear post-PCA correction | Harmony (Stage 2 baseline) |
+| Linear anchor-based / MNN in PCA space | **Scanorama** (Q3.2; *was* Seurat RPCA) |
+| Non-linear VAE | scGen (Q3.3) |
+
+The implementation switch within the "anchor-based / MNN" family is a
+documented tooling choice, not a methodological change. The final
+write-up will state the implementation tool by name and reference this
+decision log entry.
+
+### Strategic Significance
+Real-research outcome: when one implementation path proves
+environmentally fragile, the right move is to switch tooling while
+preserving the methodological role. Documenting the switch — rather than
+silently swapping notebooks and pretending the R attempt never happened —
+is the academic-honesty version of this. The previously-committed
+Seurat-side artifacts (commits `f32d296` through `d605024`) are
+preserved as historical record of the attempted path.
+
+### Housekeeping (deliberately *not* done)
+- `~/.pyenv/versions/3.14.0/` (empty orphan dir): left in place. Not
+  cleaned because (a) it is harmless and (b) the failure mode would
+  recur if any future R-side reticulate work is attempted without a
+  `RETICULATE_PYTHON` guard.
+- `~/Library/Caches/org.R-project.R/R/reticulate/uv/cache/...` (~150 MB):
+  left in place for the same reason.
+- `melanoma-r` conda env: left installed. Available if a future R-only
+  method (Stage 3 stretch or beyond) is needed; not used for Q3.2.
+- `notebooks/05_seurat_rpca.ipynb` + `scripts/build_notebook_05.py`:
+  left committed as historical record. The new Q3.2 work uses a new
+  notebook file (`05_rpca.ipynb`) without a build script per project
+  lead's instruction.
+
+### Documentation
+- New (Python) notebook: `notebooks/05_rpca.ipynb`
+- New dependency: `scanorama` added to `environment.yml` (pip section)
+- CLAUDE.md Stage 3 Working Spec updated in the same commit as this entry.
