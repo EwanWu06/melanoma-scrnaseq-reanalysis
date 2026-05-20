@@ -203,3 +203,76 @@ preserved as historical record of the attempted path.
 - New (Python) notebook: `notebooks/05_rpca.ipynb`
 - New dependency: `scanorama` added to `environment.yml` (pip section)
 - CLAUDE.md Stage 3 Working Spec updated in the same commit as this entry.
+
+---
+
+## 2026-05-19 (d): Q3.2 algorithmic pivot — Scanorama to BBKNN
+
+> *Further refines Q3.2 implementation. Scanorama was investigated and
+> found to fail silently on Tirosh data; BBKNN is selected as the
+> RPCA-family replacement.*
+
+### Trigger
+
+Scanorama integration was attempted with both default `dimred=30` and
+reduced `dimred=5`. In both configurations:
+- Verbose log printed only `Processing datasets (0, 1)` — Scanorama
+  processed only the first pair of patients (pt75=3 cells, pt65=4 cells,
+  sorted by ascending cell count) and terminated without processing
+  the remaining 13 patients.
+- Patient silhouette score on integrated embedding: 0.34 (`dimred=30`)
+  and 0.46 (`dimred=5`) — both higher than the raw PCA baseline (0.33),
+  meaning Scanorama did not integrate the data.
+- The integrated embedding was structurally equivalent to per-batch
+  PCA projection, with no cross-batch alignment.
+
+### Decision
+
+Abandon Scanorama for Stage 3. Reassign the second slot of the method
+comparison to BBKNN (Polański et al. 2020, batch-balanced k-nearest
+neighbors), which operates at the kNN graph level and does not require
+per-batch SVD.
+
+### Reason
+
+1. Scanorama's algorithm requires per-batch principal component analysis
+   to compute reciprocal projections. With 6 of 15 patients having fewer
+   than 30 cells (pt75=3, pt65=4, pt60=9, pt94=10, pt84=14, pt53=16),
+   the small-batch SVD enters degenerate regimes. The silent failure
+   to process pairs beyond (0, 1) is consistent with such a degeneracy
+   in pair-selection or termination logic.
+2. BBKNN's algorithm is structurally tolerant of small batches: it
+   operates on the post-PCA neighbor graph and treats small batches
+   as a few additional graph nodes, not as data subsets requiring
+   independent dimensionality reduction.
+3. BBKNN remains in a different algorithmic family from Harmony
+   (post-PCA cluster shift) and scGen (non-linear VAE), preserving the
+   3-family comparison structure.
+
+### Method comparison structure after this pivot
+
+- Method 1: Harmony — linear post-PCA cluster shift correction
+- Method 2: BBKNN — graph-based batch-balanced neighbor correction
+  (previously planned: Seurat RPCA → Scanorama → BBKNN)
+- Method 3: scGen — non-linear conditional VAE
+
+### What changes in CLAUDE.md
+
+- Notebook 05 renamed from `05_rpca.ipynb` to `05_bbknn.ipynb`
+  (commit will reflect the rename)
+- Stage 3 Working Spec "Implementation order" updated to reflect
+  BBKNN as method 2
+
+### Strategic significance
+
+The Scanorama investigation produced two empirical findings worth
+documenting in the Stage 3 mini-report:
+1. Scanorama silently fails on datasets with very small batches in a
+   way that does not raise errors or warnings. Users should validate
+   integration with patient silhouette diagnostics.
+2. The algorithmic assumption of per-batch SVD becomes a hard constraint
+   on small-sample scRNA-seq integration. BBKNN's graph-level approach
+   sidesteps this constraint.
+
+Both findings are research observations about the algorithms themselves,
+not project failures.

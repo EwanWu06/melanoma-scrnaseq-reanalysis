@@ -16,11 +16,11 @@ Deep Learning Approaches on the Tirosh et al. (2016) Melanoma Single-Cell Datase
 **One-line description:**
 A learning-oriented re-analysis of a foundational 2016 melanoma scRNA-seq dataset
 (Tirosh et al., GSE72056), comparing three integration methods that accept
-log-normalized data (Harmony, Scanorama as RPCA-family integration, scGen) for
-their ability to recover the Tsoi four-state model, benchmarked against a recent
-classical re-analysis (Balderson et al., 2024). Count-based methods (scVI /
-scANVI / UCE / count-tokenized foundation models) were ruled out — raw counts
-are DUOS controlled-access (see `docs/decision_log.md`).
+log-normalized data (Harmony, BBKNN, scGen) for their ability to recover the
+Tsoi four-state model, benchmarked against a recent classical re-analysis
+(Balderson et al., 2024). Count-based methods (scVI / scANVI / UCE /
+count-tokenized foundation models) were ruled out — raw counts are DUOS
+controlled-access (see `docs/decision_log.md`).
 
 **Purpose:**
 This project is part of an undergraduate transfer application portfolio.
@@ -107,10 +107,11 @@ reproducibility over novel discovery.
 
 **Core (must complete):**
 Re-analyze Tirosh 2016 with three log-input integration methods spanning
-three method families: **Harmony** (linear post-PCA correction — Stage 2
-baseline), **Scanorama** (RPCA-family / linear anchor-based, MNN in PCA
-space; replaces the originally-planned Seurat RPCA — see
-`docs/decision_log.md` 2026-05-19 (c)), and **scGen** (non-linear VAE).
+three method families: **Harmony** (linear post-PCA cluster-shift
+correction — Stage 2 baseline), **BBKNN** (graph-based batch-balanced
+kNN correction; replaces the originally-planned Seurat RPCA / Scanorama
+path that failed on small-batch SVD — see `docs/decision_log.md`
+2026-05-19 (c) and (d)), and **scGen** (non-linear conditional VAE).
 Compare their ability to recover the Tsoi four states against Balderson
 2024's result. (scVI / scANVI / UCE ruled out — counts are DUOS-gated;
 see `docs/decision_log.md`.) Deliverables: GitHub repo, technical
@@ -141,12 +142,14 @@ distribution shift analysis.
 
 | # | Method | Family | Status |
 |---|---|---|---|
-| 1 | Harmony | Linear post-PCA correction | Done (Stage 2 baseline) |
-| 2 | Scanorama (RPCA-family) | Linear anchor-based, MNN in PCA space | Q3.2 — Python; replaces the historical Seurat RPCA attempt (see decision_log 2026-05-19 (c)) |
-| 3 | scGen | Non-linear VAE | Q3.3 after |
+| 1 | Harmony | Linear post-PCA cluster-shift correction | Done (Stage 2 baseline) |
+| 2 | BBKNN | Graph-based batch-balanced kNN | Q3.2 — Python; replaces historical Seurat RPCA → Scanorama path (see decision_log 2026-05-19 (c) and (d)) |
+| 3 | scGen | Non-linear conditional VAE | Q3.3 after |
 
 **Stretch:**
-- BBKNN (4th method, graph-based) — decide after Q3.3 completes.
+- *(BBKNN was originally planned as a Stretch 4th method; promoted to Core
+  in slot 2 by decision_log 2026-05-19 (d). No fourth-method Stretch
+  currently planned.)*
 
 **Removed from Core:**
 - UCE — raw-count blocker (see `docs/decision_log.md` 2026-05-19 (b) and
@@ -190,17 +193,20 @@ Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).
   silhouette comparability.
 
 **Implementation order (notebook layout):**
-- `notebooks/05_rpca.ipynb` — Q3.2 (Python; Scanorama as RPCA-family integration)
+- `notebooks/05_bbknn.ipynb` — Q3.2 (Python; BBKNN, graph-based;
+  Scanorama and Seurat RPCA investigated, see `docs/decision_log.md`
+  2026-05-19 (c) and (d))
 - `notebooks/06_scgen.ipynb` — Q3.3 (Python; scGen with coarse-label setup)
-- `notebooks/07_bbknn.ipynb` — Stretch (optional)
-- `notebooks/08_method_comparison.ipynb` — Cross-method evaluation:
+- `notebooks/07_method_comparison.ipynb` — Cross-method evaluation:
   metrics A1/A2/B1/B2/C1/C2, plus cross-method cluster agreement metrics
   (specific choice — e.g. ARI, NMI, or alternative — to be finalized in
-  notebook 08)
+  notebook 07)
 
 > *Historical: `notebooks/05_seurat_rpca.ipynb` + `scripts/build_notebook_05.py`
 > are preserved in git as the record of the attempted R-side Seurat RPCA
-> implementation; not used going forward (see decision_log 2026-05-19 (c)).*
+> implementation; not used going forward (see decision_log 2026-05-19 (c)).
+> The Scanorama attempt (decision_log (d)) did not produce a committed
+> notebook artifact — its findings live only in the decision log.*
 
 **Environment:** All three Stage 3 Core methods now run in the existing
 `melanoma-scrnaseq` conda env (Python 3.11 + scanpy + scvi-tools +
@@ -321,9 +327,10 @@ regeneration. To modify the notebook, edit the build script and re-run
 - [ ] Update Balderson 2024 reading notes Q3/Q4 (current draft has generic limitations)
 - [x] Stage 3 Q3.1 — feasibility audit complete (`docs/stage3_feasibility_audit.md`);
       UCE removed from Core (raw-count blocker, A100 GPU requirement)
-- [ ] Stage 3 Q3.2 — Scanorama (RPCA-family integration, Python) on Tirosh
-      malignant cells; replaces the originally-planned Seurat RPCA (see
-      `docs/decision_log.md` 2026-05-19 (c))
+- [ ] Stage 3 Q3.2 — BBKNN (graph-based batch correction, Python) on Tirosh
+      malignant cells; replaces the Seurat RPCA → Scanorama implementation
+      path that hit small-batch SVD failure (see `docs/decision_log.md`
+      2026-05-19 (c) and (d))
 - [ ] Stage 3 Q3.3 — scGen with Tirosh coarse labels (`labels_key`),
       `n_latent = 30` for parity
 - [ ] Stage 3 carryover from Stage 2: revisit Harmony theta sensitivity,

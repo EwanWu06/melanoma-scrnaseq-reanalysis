@@ -28,3 +28,6 @@ dependencies:
   - jupyterlab
   - ipykernel
   - pip
+  # Pip-only (no conda package)
+  - pip:
+    - scanorama  # Q3.2 RPCA-family integration (Hie et al. 2019; pinned by lockfile if needed)
