@@ -33,7 +33,7 @@ reproducibility over novel discovery.
 
 ## Current Stage
 
-**Active stage:** Stage 3 preparation — Stage 2 (Classical Pipeline Replication) complete; see `docs/stage2_report.md`
+**Active stage:** Stage 3 — Q3.3 (scGen) is the active quest. Q3.1 (feasibility audit) and Q3.2 (BBKNN integration, `notebooks/05_bbknn.ipynb`) are complete.
 
 **Stage progression:**
 - [x] Stage 0: Setup & Foundation
@@ -327,10 +327,11 @@ regeneration. To modify the notebook, edit the build script and re-run
 - [ ] Update Balderson 2024 reading notes Q3/Q4 (current draft has generic limitations)
 - [x] Stage 3 Q3.1 — feasibility audit complete (`docs/stage3_feasibility_audit.md`);
       UCE removed from Core (raw-count blocker, A100 GPU requirement)
-- [ ] Stage 3 Q3.2 — BBKNN (graph-based batch correction, Python) on Tirosh
+- [x] Stage 3 Q3.2 — BBKNN (graph-based batch correction, Python) on Tirosh
       malignant cells; replaces the Seurat RPCA → Scanorama implementation
       path that hit small-batch SVD failure (see `docs/decision_log.md`
-      2026-05-19 (c) and (d))
+      2026-05-19 (c) and (d)). Notebook `05_bbknn.ipynb`; annotation in
+      `adata.obs['tsoi_state_bbknn']`.
 - [ ] Stage 3 Q3.3 — scGen with Tirosh coarse labels (`labels_key`),
       `n_latent = 30` for parity
 - [ ] Stage 3 carryover from Stage 2: revisit Harmony theta sensitivity,

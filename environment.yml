@@ -30,4 +30,5 @@ dependencies:
   - pip
   # Pip-only (no conda package)
   - pip:
-    - scanorama  # Q3.2 RPCA-family integration (Hie et al. 2019; pinned by lockfile if needed)
+    - bbknn       # Q3.2 batch integration — graph-based BBKNN (Polański et al. 2020)
+    - scanorama   # Q3.2 investigated, not adopted — see docs/decision_log.md 2026-05-19 (d)

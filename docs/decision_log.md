@@ -276,3 +276,47 @@ documenting in the Stage 3 mini-report:
 
 Both findings are research observations about the algorithms themselves,
 not project failures.
+
+---
+
+## 2026-05-19 (e): BBKNN approximation vs exact nearest neighbors
+
+> Documents a reproducibility finding during Q3.2 implementation. Adds
+> approx=False as a project standard for BBKNN.
+
+### Trigger
+
+Initial Q3.2 BBKNN runs used the default approx=True (annoy-based approximate
+nearest neighbors). Multiple executions of the same code produced different
+cluster partitions — res=0.8 fluctuated between 6 and 7 clusters across runs,
+and the canonical run produced a 4-cluster partition at res=0.5 with two
+batch-pure clusters (pt79=98%, pt59=98%).
+
+### Decision
+
+For all BBKNN runs in this project, set approx=False (exact nearest neighbors).
+
+### Reason
+
+1. Reproducibility: For a portfolio project intended to be re-runnable by
+   reviewers or by the author at a future date, stochastic clustering output
+   is unacceptable. With 1257 cells, exact kNN is computationally negligible.
+
+2. Genuine algorithmic difference, not just noise: approx=False at res=0.5
+   produced a 3-cluster partition with zero batch-pure clusters; approx=True
+   produced a 4-cluster partition with two batch-pure clusters (pt79, pt59).
+   The "extra" approx=True clusters appear to be artifacts of the
+   approximate kNN graph rather than biological structure. This is itself
+   a methodological finding worth recording.
+
+3. The corrected (approx=False) partition is also the cleaner method-comparison
+   result: BBKNN integrates pt79 and pt59 into biological clusters rather than
+   leaving them as patient-specific artifacts. This strengthens the Q3.2
+   finding that graph-based batch correction outperforms post-PCA cluster shift
+   on this dataset for patient integration.
+
+### Strategic significance
+
+This finding will inform the Stage 3 mini-report's discussion of reproducibility
+in graph-based clustering — a common but often-undocumented source of variability
+in scRNA-seq pipelines.
