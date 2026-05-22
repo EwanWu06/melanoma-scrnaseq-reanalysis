@@ -320,3 +320,152 @@ For all BBKNN runs in this project, set approx=False (exact nearest neighbors).
 This finding will inform the Stage 3 mini-report's discussion of reproducibility
 in graph-based clustering — a common but often-undocumented source of variability
 in scRNA-seq pipelines.
+
+---
+
+## 2026-05-22 (f): Q3.3 scGen ruled out — API-contract drift and library abandonment
+
+> *Stage 3 method comparison changes from 3-method to 2-method following
+> runtime verification that scGen is unusable with modern scvi-tools.*
+
+### Trigger
+
+Q3.3 implementation began with installation of scGen into the
+melanoma-scrnaseq Python environment. Two installation paths were tested:
+
+**Path 1 — PyPI release (scgen 2.1.0)**: Installation succeeded.
+`import scgen` failed immediately with `ModuleNotFoundError: No module
+named 'scvi._compat'`. The module had been removed from scvi-tools 1.0+
+(2023), and scgen 2.1.0 still imports it.
+
+**Path 2 — GitHub master (scgen 2.1.1, one patch ahead of PyPI)**: GitHub
+issue #97 reports that the master branch installs past the PyPI import
+failure. Runtime testing on minimal fake data confirmed this and went
+further:
+
+- ✅ `import scgen` succeeds (`_compat` reference patched)
+- ✅ `scgen.SCGEN.setup_anndata()` succeeds
+- ✅ `scgen.SCGEN()` object construction succeeds (`LossRecorder → LossOutput` rename patched)
+- ✅ `model.train(max_epochs=1)` completes
+- ❌ `model.get_latent_representation()` fails:
+
+```
+File scvi/model/base/_vaemixin.py:348, in get_latent_representation
+    qz: Distribution = Normal(qzm, qzv.sqrt())
+                              ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'sqrt'
+```
+
+- ❌ `model.batch_removal()` fails with the same error (`scgen/_scgen.py:220`
+  calls `get_latent_representation()` internally)
+
+### Root cause — API-contract drift, not architecture
+
+scGen's module **is a genuine variational autoencoder** — class `SCGENVAE`,
+a probabilistic encoder (`scvi.nn.Encoder`), a computed posterior variance
+`qz_v`, and a KL term in its loss. Its `inference()` returns the posterior
+as separate tensors keyed `qz_m` / `qz_v` / `z` — the scvi-tools 0.x
+convention.
+
+scvi-tools 1.x changed the contract: `VAEMixin.get_latent_representation()`
+expects either a single `qz` `Distribution` object, or the renamed keys
+`qzm` / `qzv` (no underscore). scGen still emits `qz_m` / `qz_v`, satisfies
+neither, so scvi-tools 1.4.2 resolves both to `None` and crashes at
+`Normal(qzm, qzv.sqrt())`. `batch_removal()` fails identically — it calls
+`get_latent_representation()` internally (`scgen/_scgen.py:220`).
+
+The gap is small in principle (scGen's `inference()` would need to emit a
+`qz` distribution — a few lines). It is not fixable for this project:
+patching means forking/vendoring a dependency; upstream is unmaintained
+(#90 closed without fix, #97 open with no maintainer response); a
+self-patched integration method cannot be honestly defended in a
+methodological write-up. The cause is **library drift + abandonment**, not
+architectural impossibility.
+
+### Open GitHub issues confirming abandonment
+
+- **Issue #90** (opened 2023-10-24, closed) — "tutorial does not run,
+  version issues with scvi-tools". Closed without resolution.
+- **Issue #97** (opened 2024-08-01, still open) — "dependencies update
+  required". A user reports that GitHub master installation passes
+  `_compat`, but no maintainer has responded for ~21 months. Our
+  verification confirms the user's report and also demonstrates that the
+  remaining latent-extraction failure is not solvable at the user level.
+
+### Decision
+
+scGen is removed from the Stage 3 Core method comparison. Stage 3 final
+method set:
+
+- **Method 1**: Harmony — linear post-PCA correction (completed in Stage 2)
+- **Method 2**: BBKNN — graph-based batch correction (completed in Q3.2)
+
+scGen joins UCE (entry b) and Scanorama (entry d) as "investigated but
+ruled out". Each has a distinct failure category:
+
+| Method | Failure category | Reference |
+|--------|------------------|-----------|
+| scVI / scANVI | raw-count dependency | entry a |
+| UCE | raw-count dependency + GPU requirement | entry b |
+| Seurat RPCA | R/Python interop instability | entry c |
+| Scanorama | algorithm-data mismatch on small batches | entry d |
+| scGen | API-contract drift + library abandonment (scvi-tools 0.x → 1.x convention change unaddressed upstream) | this entry |
+
+### Ecosystem-level observation
+
+The "log-input + non-linear (VAE-style) + actively maintained + compatible
+with current scvi-tools" intersection is **empty** in the 2026 Python
+single-cell ecosystem:
+
+- scVI / scANVI: actively maintained, but require raw counts
+- scGen: accepts log data (and is a legitimate VAE), but emits an outdated
+  API contract (`qz_m` / `qz_v` naming) incompatible with current
+  scvi-tools (`qzm` / `qzv`); upstream unmaintained
+- DESC and other scvi-derived methods: likely share the same
+  incompatibility (not tested)
+
+For log-input scRNA-seq integration in 2026, the actively maintained
+methods are dominated by **linear** (Harmony) and **graph-based** (BBKNN)
+approaches. Non-linear VAE-based integration on log-input data requires
+either deprecated tooling (scGen) or raw counts (scVI / scANVI). This is
+itself a methodological finding worth documenting.
+
+### Lessons learned (for future feasibility audits)
+
+The Q3.1 feasibility audit evaluated scGen by reading documentation and
+source code. It did NOT include a runtime install + smoke test
+verification. As a result, the incompatibility was discovered only at Q3.3
+implementation time (~1.5 hours into setup).
+
+**Audit procedure for any future method consideration in this project (or
+others)** must include:
+
+1. Documentation / API review (what Q3.1 already does)
+2. Runtime install verification — does the package install cleanly into the
+   project environment?
+3. Smoke test — can the package's primary API be called on minimal fake
+   data without errors?
+
+Steps 2 and 3 catch incompatibilities that documentation review alone
+cannot. This is added as a project methodology note.
+
+### Verification evidence retained in repo
+
+- `scripts/smoke_test/q33_scgen_smoke.py` — original PyPI smoke test (failed
+  at import)
+- `scripts/smoke_test/q33_scgen_github_smoke.py` — GitHub master smoke test
+  (failed at latent extraction)
+- `scripts/smoke_test/q33_scgen_batch_removal_smoke.py` — batch_removal
+  alternative-path test (failed at the same internal call)
+- `docs/environment_backup_before_scgen.yml` — environment state before the
+  scGen install was attempted
+
+These artifacts allow any future reviewer to independently verify the
+ruled-out decision.
+
+### Pollution status
+
+The melanoma-scrnaseq environment retains ~33 packages added during the
+scGen install attempt (scgen, scvi-tools, lightning, pyro, etc.). These are
+inert. Decision: leave them. Will be cleaned at Stage 4 project
+finalization.

@@ -10,7 +10,8 @@ transcriptional programs associated with the disease.
 - [x] Stage 1: Foundation Building
 - [x] Stage 2: Classical Pipeline Replication
 - [x] Stage 3 Q3.1: Feasibility audit ([`docs/stage3_feasibility_audit.md`](docs/stage3_feasibility_audit.md))
-- [ ] Stage 3: Method comparison on log-normalized data (Harmony + Seurat RPCA + scGen)
+- [x] Stage 3 Q3.2: BBKNN integration ([`notebooks/05_bbknn.ipynb`](notebooks/05_bbknn.ipynb))
+- [ ] Stage 3 Q3.4: Cross-method comparison — Harmony vs BBKNN
 - [ ] Stage 4: Synthesis & Deliverables
 
 **Stage 2 complete:** the classical pipeline (QC → HVG → PCA → Harmony → Leiden)
@@ -18,12 +19,16 @@ re-analyzed the Tirosh malignant cells; only 2 of Tsoi's 4 states (Melanocytic,
 Undifferentiated) were robustly recovered — full write-up in
 [`docs/stage2_report.md`](docs/stage2_report.md).
 
-**Stage 3 Q3.1 (feasibility audit) complete:** UCE removed from Core methods
-after live source-code review confirmed its preprocessing pipeline assumes
-raw counts (same blocker class as scVI / scANVI). Stage 3 proceeds with
-three methods spanning three families — Harmony (linear post-PCA), Seurat
-RPCA (linear anchor-based), and scGen (non-linear VAE). Decision rationale
-in [`docs/decision_log.md`](docs/decision_log.md) (2026-05-19 b).
+**Stage 3 — a 2-method comparison.** After the Q3.1 feasibility audit and
+Q3.3 runtime testing, the Stage 3 method set settled on **Harmony** (linear
+post-PCA correction, Stage 2 baseline) and **BBKNN** (graph-based batch
+correction, Q3.2). Other candidates were investigated and ruled out, each
+for a distinct documented reason — **scVI / scANVI** and **UCE** (require
+DUOS-gated raw counts), **Seurat RPCA** (R/Python interop instability),
+**Scanorama** (silent failure on small batches), and **scGen** (API-contract
+drift — emits the scvi-tools 0.x interface, unusable with current
+scvi-tools, unmaintained upstream). Full rationale in
+[`docs/decision_log.md`](docs/decision_log.md) (entries a–f).
 
 ## Environment setup
 

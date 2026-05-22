@@ -2,7 +2,7 @@
 
 > This file provides project-specific context for Claude Code.
 > It is automatically loaded when Claude Code operates within this repository.
-> Updated: 2026-05-19 (post Q3.1 feasibility audit)
+> Updated: 2026-05-22 (post Q3.3 — scGen ruled out)
 
 ---
 
@@ -15,8 +15,8 @@ Deep Learning Approaches on the Tirosh et al. (2016) Melanoma Single-Cell Datase
 
 **One-line description:**
 A learning-oriented re-analysis of a foundational 2016 melanoma scRNA-seq dataset
-(Tirosh et al., GSE72056), comparing three integration methods that accept
-log-normalized data (Harmony, BBKNN, scGen) for their ability to recover the
+(Tirosh et al., GSE72056), comparing two integration methods that accept
+log-normalized data (Harmony, BBKNN) for their ability to recover the
 Tsoi four-state model, benchmarked against a recent classical re-analysis
 (Balderson et al., 2024). Count-based methods (scVI / scANVI / UCE /
 count-tokenized foundation models) were ruled out — raw counts are DUOS
@@ -33,7 +33,7 @@ reproducibility over novel discovery.
 
 ## Current Stage
 
-**Active stage:** Stage 3 — Q3.3 (scGen) is the active quest. Q3.1 (feasibility audit) and Q3.2 (BBKNN integration, `notebooks/05_bbknn.ipynb`) are complete.
+**Active stage:** Stage 3 — Q3.4 cross-method comparison (`notebooks/07_method_comparison.ipynb`): Harmony vs BBKNN. Q3.1 (feasibility audit), Q3.2 (BBKNN integration, `notebooks/05_bbknn.ipynb`), and Q3.3 (scGen — ruled out, see `docs/decision_log.md` 2026-05-22 (f)) are complete.
 
 **Stage progression:**
 - [x] Stage 0: Setup & Foundation
@@ -86,7 +86,7 @@ reproducibility over novel discovery.
 4. Raw counts **exist but are DUOS controlled-access** (confirmed by Dr.
    Tirosh, 2026-05-19); not obtainable on this project's timeline. Stage 3
    therefore uses **integration methods that accept log-normalized data**
-   (Harmony, Seurat RPCA, scGen) — **not** count-based scVI / scANVI / UCE.
+   (Harmony, BBKNN) — **not** count-based scVI / scANVI / UCE.
    Authoritative rationale: `docs/decision_log.md`.
 
 **Metadata structure (rows 1-4 of the file):**
@@ -106,16 +106,16 @@ reproducibility over novel discovery.
 ## Project Scope (Three Tiers)
 
 **Core (must complete):**
-Re-analyze Tirosh 2016 with three log-input integration methods spanning
-three method families: **Harmony** (linear post-PCA cluster-shift
-correction — Stage 2 baseline), **BBKNN** (graph-based batch-balanced
+Re-analyze Tirosh 2016 with two log-input integration methods spanning
+two method families: **Harmony** (linear post-PCA cluster-shift
+correction — Stage 2 baseline) and **BBKNN** (graph-based batch-balanced
 kNN correction; replaces the originally-planned Seurat RPCA / Scanorama
 path that failed on small-batch SVD — see `docs/decision_log.md`
-2026-05-19 (c) and (d)), and **scGen** (non-linear conditional VAE).
-Compare their ability to recover the Tsoi four states against Balderson
-2024's result. (scVI / scANVI / UCE ruled out — counts are DUOS-gated;
-see `docs/decision_log.md`.) Deliverables: GitHub repo, technical
-report, dashboard.
+2026-05-19 (c) and (d)). Compare their ability to recover the Tsoi
+four states against Balderson 2024's result. (scVI / scANVI / UCE ruled
+out — counts are DUOS-gated; scGen ruled out — API-contract drift,
+unusable with current scvi-tools; see `docs/decision_log.md`.)
+Deliverables: GitHub repo, technical report, dashboard.
 
 **Stretch (if time allows):**
 - Add **BBKNN** as a fourth method (graph-based batch correction, accepts
@@ -138,13 +138,12 @@ distribution shift analysis.
 
 **Headline:** Method comparison on log-normalized data.
 
-**Core methods (three families, three implementations):**
+**Core methods (two families, two implementations):**
 
 | # | Method | Family | Status |
 |---|---|---|---|
 | 1 | Harmony | Linear post-PCA cluster-shift correction | Done (Stage 2 baseline) |
-| 2 | BBKNN | Graph-based batch-balanced kNN | Q3.2 — Python; replaces historical Seurat RPCA → Scanorama path (see decision_log 2026-05-19 (c) and (d)) |
-| 3 | scGen | Non-linear conditional VAE | Q3.3 after |
+| 2 | BBKNN | Graph-based batch-balanced kNN | Done (Q3.2, `notebooks/05_bbknn.ipynb`); replaces historical Seurat RPCA → Scanorama path (see decision_log 2026-05-19 (c) and (d)) |
 
 **Stretch:**
 - *(BBKNN was originally planned as a Stretch 4th method; promoted to Core
@@ -154,6 +153,9 @@ distribution shift analysis.
 **Removed from Core:**
 - UCE — raw-count blocker (see `docs/decision_log.md` 2026-05-19 (b) and
   `docs/stage3_feasibility_audit.md`).
+- scGen — API-contract drift + library abandonment; emits the scvi-tools
+  0.x inference-output convention and is unusable with current scvi-tools
+  (see `docs/decision_log.md` 2026-05-22 (f)).
 
 **Evaluation scope:** malignant-only subset (1,257 cells) for **all**
 cross-method comparisons (state recovery *and* batch quality), consistent
@@ -163,7 +165,7 @@ different question (general-purpose batch correction across heterogeneous
 cell types) than the Tsoi-recovery question driving Stage 3.
 
 **Embedding dimensions:** 30 dimensions across all methods (parity with
-Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).
+Stage 2 PCA / Harmony output).
 
 **Evaluation metrics (Stage 3 comparison notebook):**
 
@@ -183,20 +185,10 @@ Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).
   - C2: Number of biologically interpretable Tsoi states recovered + number
     of patient-driven (batch artifact) clusters identified
 
-**scGen-specific procedure (not a separate metric category):**
-
-- Trained on the full dataset (all 4,645 cells) using coarse Tirosh-authored
-  labels as `labels_key` (malignant flag + 6 non-malignant cell type codes).
-- Evaluated on the malignant subset (1,257 cells) — embedding subsetted
-  downstream for fair comparison with Harmony / RPCA.
-- `n_latent = 30`, matching Harmony / RPCA dimensionality for direct
-  silhouette comparability.
-
 **Implementation order (notebook layout):**
 - `notebooks/05_bbknn.ipynb` — Q3.2 (Python; BBKNN, graph-based;
   Scanorama and Seurat RPCA investigated, see `docs/decision_log.md`
   2026-05-19 (c) and (d))
-- `notebooks/06_scgen.ipynb` — Q3.3 (Python; scGen with coarse-label setup)
 - `notebooks/07_method_comparison.ipynb` — Cross-method evaluation:
   metrics A1/A2/B1/B2/C1/C2, plus cross-method cluster agreement metrics
   (specific choice — e.g. ARI, NMI, or alternative — to be finalized in
@@ -208,7 +200,7 @@ Stage 2 PCA / Harmony output, and with `n_latent = 30` for scGen).
 > The Scanorama attempt (decision_log (d)) did not produce a committed
 > notebook artifact — its findings live only in the decision log.*
 
-**Environment:** All three Stage 3 Core methods now run in the existing
+**Environment:** Both Stage 3 Core methods (Harmony, BBKNN) now run in the existing
 `melanoma-scrnaseq` conda env (Python 3.11 + scanpy + scvi-tools +
 scanorama). New dependency added for Q3.2: `scanorama` (pip-installed;
 recorded in `environment.yml`).
@@ -236,9 +228,9 @@ four-state model** (*Cancer Cell* 33:890-904):
 
 **Balderson et al. 2024** (BFG, elad055) already re-analyzed Tirosh 2016 with
 classical methods (PCA + Monocle) and recovered these four states. Our project's
-novelty is **applying modern log-input integration methods across three
-different families** (linear post-PCA correction / linear anchor-based /
-non-linear VAE) to the same dataset and benchmarking against this classical
+novelty is **applying modern log-input integration methods across two
+different families** (linear post-PCA correction / graph-based kNN
+correction) to the same dataset and benchmarking against this classical
 result.
 
 ---
@@ -332,8 +324,10 @@ regeneration. To modify the notebook, edit the build script and re-run
       path that hit small-batch SVD failure (see `docs/decision_log.md`
       2026-05-19 (c) and (d)). Notebook `05_bbknn.ipynb`; annotation in
       `adata.obs['tsoi_state_bbknn']`.
-- [ ] Stage 3 Q3.3 — scGen with Tirosh coarse labels (`labels_key`),
-      `n_latent = 30` for parity
+- [x] Stage 3 Q3.3 — scGen **ruled out**: API-contract drift + library
+      abandonment (scGen emits scvi-tools 0.x `qz_m`/`qz_v` keys, unusable
+      with current scvi-tools; upstream unmaintained). See
+      `docs/decision_log.md` 2026-05-22 (f).
 - [ ] Stage 3 carryover from Stage 2: revisit Harmony theta sensitivity,
       ultra-small patients (malignant 75=3, 65=4, 60=9, 94=10), and immune
       contamination — all documented as Stage 2 limitations in
