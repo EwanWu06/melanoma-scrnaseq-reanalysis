@@ -469,3 +469,56 @@ The melanoma-scrnaseq environment retains ~33 packages added during the
 scGen install attempt (scgen, scvi-tools, lightning, pyro, etc.). These are
 inert. Decision: leave them. Will be cleaned at Stage 4 project
 finalization.
+
+---
+
+## 2026-05-26 (g): Stage 4 scVelo ruled out (audit-stage)
+
+> Documented at Stage 4 feasibility audit. scVelo is ruled out before 
+> any implementation work, following the Q3.1 audit pattern (entry b 
+> for UCE).
+
+### Trigger
+
+Stage 4 audit (`docs/stage4_feasibility_audit.md` §3.3) evaluated 
+scVelo as a trajectory inference method candidate for addressing 
+P1b's continuum framing.
+
+### Primary blocker
+
+scVelo computes RNA velocity from spliced/unspliced read count ratios, 
+which require splice-aware alignment of raw FASTQ reads (via velocyto, 
+kallisto-bustools, or STAR-solo). Both Stage 4 candidate datasets 
+(GSE72056 Tirosh, GSE115978 Jerby-Arnon) place raw FASTQ behind 
+controlled-access portals (DUOS and dbGaP respectively). Neither 
+public deposit contains the spliced/unspliced separation scVelo 
+requires.
+
+### Secondary methodological concern
+
+Even with FASTQ access, RNA velocity on Smart-seq2 (full-length 
+non-UMI) data is methodologically off-label — scVelo's published 
+validations are predominantly on 10x Chromium UMI data, where 
+spliced/unspliced distinction is cleaner. Smart-seq2 velocity is 
+possible in principle but adds layered methodological caveats.
+
+### Decision
+
+scVelo ruled out at Stage 4 audit. Same blocker class as Stage 3 
+entries a (scVI/scANVI), b (UCE) — raw reads required but 
+controlled-access.
+
+### Stage 4 trajectory inference path
+
+PAGA (scanpy core) selected as the trajectory inference method for 
+Stage 4 C2 (verified runtime-importable; no new dependencies; uses 
+existing kNN graph). See `docs/stage4_feasibility_audit.md` §3.2.
+
+### Strategic significance
+
+Stage 4 now has 7 ruled-out methods documented across entries (a–g), 
+spanning multiple distinct failure categories: raw-count dependency 
+(a, b, g), R/Python interop (c), small-batch failure (d), API drift 
+(f). Pre-implementation audit-stage rulings (b, g) demonstrate the 
+Q3.1 forward fix (runtime verification before implementation) in 
+sustained practice.
