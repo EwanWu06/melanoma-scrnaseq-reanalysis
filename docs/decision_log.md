@@ -522,3 +522,71 @@ spanning multiple distinct failure categories: raw-count dependency
 (f). Pre-implementation audit-stage rulings (b, g) demonstrate the 
 Q3.1 forward fix (runtime verification before implementation) in 
 sustained practice.
+
+---
+
+## 2026-05-26 (h): Stage 4 C1 framing revised — Jerby-Arnon cohort composition
+
+> Discovered during Boundary B (Phase 2 schema inspection of GSE115978). 
+> Audit framing assumed Jerby-Arnon was "an independent dataset"; cohort 
+> composition reveals 58% Tirosh-overlap. Stage 4 C1 redesigned as 
+> 3-layer framework.
+
+### Trigger
+
+Stage 4 Boundary B Phase 2 (schema inspection of 
+`GSE115978_cell.annotations.csv.gz`) revealed that the `Cohort` 
+column splits cells into two distinct subsets:
+
+- `Cohort == 'Tirosh'` (4199 cells, 58%) — Tirosh 2016 cells re-annotated by Jerby-Arnon lab
+- `Cohort == 'New'` (2987 cells, 42%) — Jerby-Arnon's newly acquired cells
+
+Evidence: Tirosh-cohort cell IDs follow Tirosh naming convention 
+(`cy78_*`, `cy79_*`, `CY88_*`); `samples` values match Tirosh patient 
+identifiers (Mel79 ↔ cy79). Confirmed not coincidental.
+
+### Audit framing error
+
+Stage 4 feasibility audit (commit 9cf2c69) §2.1 and §2.6 framed 
+Jerby-Arnon as "the natural complement: a larger melanoma scRNA-seq 
+cohort" for "cross-dataset validation". This framing was incomplete: 
+58% of cells are not an independent dataset but a re-annotation 
+of Tirosh.
+
+### Revised framing — three layers
+
+See `docs/stage4_dataset_schema.md` §5 for detail. Summary:
+
+1. **Layer 1 (Tirosh-subset, 4199 cells)**: Same cells, annotation-framework meta-comparison (our Tsoi vs Jerby-Arnon cell.types)
+2. **Layer 2 (New cohort, 2987 cells)**: True independent validation of P1's dataset-level NGFR claim
+3. **Layer 3 (7186 cells)**: Cross-cohort heterogeneity within one publication
+
+This is arguably *richer* than the original binary framing — three 
+scientific questions instead of one — but the original "independent 
+validation" framing must not be carried forward.
+
+### Forward fix — audit procedure extension
+
+Stage 3 Q3.1 audit forward fix (entry f) added "runtime install + 
+smoke test" to method-level audit. This entry adds:
+
+**Audit procedures must include dataset composition verification** 
+when a dataset is framed as independent / complementary. Specifically:
+- For any "cross-dataset" framing, inspect `Cohort` / source columns 
+  in annotation metadata before declaring independence.
+- Cell-ID naming convention cross-referencing with potential overlap 
+  datasets.
+- Sample-/patient-identifier overlap analysis.
+
+The Stage 4 audit (entry g context) verified method runtime (PAGA 
+import) but did not include dataset composition verification. 
+Forward Stage 5+ audits include this step.
+
+### Stage 4 audit doc handling
+
+Stage 4 feasibility audit (`docs/stage4_feasibility_audit.md`, commit 
+9cf2c69) is left unmodified to preserve the audit's original framing 
+as part of the project's transparent research trajectory. This 
+schema document and decision log entry serve as the documented 
+revision; future readers should consult `docs/stage4_dataset_schema.md` 
+§5 for the operating Stage 4 C1 framework.
