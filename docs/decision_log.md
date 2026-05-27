@@ -590,3 +590,99 @@ as part of the project's transparent research trajectory. This
 schema document and decision log entry serve as the documented 
 revision; future readers should consult `docs/stage4_dataset_schema.md` 
 §5 for the operating Stage 4 C1 framework.
+
+---
+
+## 2026-05-26 (i): Stage 4 Phase 2.6 statistical naïveté — mentor χ² narrative reach
+
+> Self-documented mentor error. Phase 2.6 Layer 2 treatment hypothesis 
+> chi-square returned p < 0.0001 with 100% post-treatment in NC cluster. 
+> Mentor immediately reached for "treatment-induced biology" narrative 
+> framing for Stage 3 P1 revision. Phase 2.7 sanity checks revealed the 
+> result reflects patient/treatment confounding, not biology.
+
+### Trigger
+
+Phase 2.6 (`notebooks/08_jerby_arnon_load.ipynb` Cell 31-32): NC + 
+Transitory clusters showed extreme treatment-group composition (NC 
+72/72 = 100% post, Trans 21/28 = 75% post; combined NGFR-high 93/100 = 
+93% post). Chi-square test: χ² = 36.58, p < 0.0001.
+
+Mentor's immediate framing was: "NGFR-high states are treatment-induced 
+dedifferentiation, consistent with Tsoi 2018 + BRAF resistance 
+literature. P1 revised to 'Tirosh failed to recover NGFR states because 
+cohort lacks treatment-exposed cells.'"
+
+### What Phase 2.7 sanity checks revealed
+
+3 checks invalidated the inference:
+
+1. **Patient breakdown**: NC + Transitory cells 74% from single patient 
+   Mel110, 93-97% from 2 patients (Mel110 + Mel106). Not "treatment-driven 
+   biology" — "Mel110-driven biology".
+
+2. **Treatment-patient confound**: All 11 Layer 2 patients are 100% 
+   one-way (no within-patient paired naive/post samples). Treatment 
+   effect mathematically inseparable from patient identity at this 
+   design.
+
+3. **Tirosh cohort treatment status**: Jerby-Arnon's Tirosh cohort 
+   contains 1803 post-treatment cells (43% of 4199). The proposed 
+   "Tirosh = naive cohort" hypothesis underlying the treatment-biology 
+   narrative is empirically false.
+
+### Mentor's error
+
+I (mentor) reached for biological narrative based on χ² magnitude 
+without analyzing experimental design. Specifically:
+
+- I did not request patient breakdown before interpreting χ² (Phase 2.6 
+  → 2.7 progression was prompted by Ewan + Claude Code's sanity 
+  surfacing, not mentor-initiated)
+- I treated pseudo-replicated cell-level data as if independent — 
+  860 cells from 11 patients are not 860 independent observations
+- I did not verify the Tirosh-cohort treatment status assumption before 
+  building narrative on it
+- I was prior-anchored: Phase 1.2 verdict was "P1 strengthened"; when 
+  Phase 2 data appeared to contradict, I over-corrected and latched 
+  onto the first available alternative (treatment biology) rather than 
+  continuing to test
+
+### Forward fix
+
+For all future statistical claims with χ², ANOVA, regression, etc., on 
+multi-patient single-cell data:
+
+1. **Verify independence assumption first**. Pseudo-replicated cells 
+   from N patients should not be treated as N_cells independent 
+   observations. Report patient-level summaries; use 
+   patient-as-random-effect models when inferential statistics matter.
+
+2. **Pre-commit to design analysis before result interpretation**. When 
+   potential confounds (patient ↔ treatment, batch ↔ condition) exist, 
+   analyze the confound structure first. Do not interpret the result 
+   until confound is ruled out.
+
+3. **Statistical effect sizes that look "too clean" (e.g., 100% one-way 
+   in 72 cells) are suspicious, not evidence**. 100% post-treatment in 
+   72 cells from 2 patients is much weaker evidence than 70% post in 
+   72 cells from 10 patients.
+
+4. **Mentor role is to slow down narrative when verdict is too clean, 
+   not accelerate**. χ² p < 0.0001 should trigger "verify this isn't 
+   pseudo-replication" instinct, not "build narrative" instinct.
+
+### Stage 4 narrative consequence
+
+After Phase 2.7-2.8 sanity checks, Stage 4 Layer 2's final finding is:
+
+- Stage 3 P1 (Tirosh NGFR weakness) survives patient-level scrutiny
+- Layer 2 NGFR-cluster recovery is single-tumor-driven (Mel110, 91%)
+- P1 refined to cohort-composition mechanism (not uniform NGFR 
+  suppression, but absence of NGFR-rich tumors in Tirosh)
+- Treatment-biology hypothesis ruled non-attributable at Layer 2 design
+
+### Reference
+
+`notebooks/08_jerby_arnon_load.ipynb` Cell 30-38 (Phase 2.6 + 2.7 + 2.8 
+sequence).
