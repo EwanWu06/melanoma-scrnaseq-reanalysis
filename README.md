@@ -136,3 +136,53 @@ and a definitive test on a larger multi-patient NGFR-rich cohort.
 ## License
 
 [MIT](LICENSE)
+
+---
+
+## AI Collaboration & Intellectual Ownership
+
+This project was developed with an AI-assisted workflow, using the Claude
+Code CLI to help implement and document my analyses. To keep the division
+of labor transparent and academically honest, the collaboration model is
+defined explicitly in CLAUDE.md: *the student designs the analysis; Claude
+Code implements.*
+
+**My Role — Analysis Design & Scientific Decisions:**
+All core scientific questions, biological assessments, and methodological
+decisions were made independently by me. These include, but are not limited
+to:
+
+- **Data preprocessing assessment.** Independently identifying that the
+  baseline Tirosh 2016 dataset was already supplied as **log2(TPM/10+1)** —
+  i.e., TPM-normalized and log-transformed — and therefore deciding to
+  bypass the standard normalization step to avoid double normalization and
+  double log-transformation.
+
+- **Methodological pivots & restructuring.** Decisively adjusting the
+  research architecture after confirming that the **raw counts were locked
+  behind DUOS controlled-access restrictions**. This led to the proactive
+  exclusion of deep generative models (e.g., scVI/scANVI) and foundation
+  models (e.g., **UCE**) in favor of evaluating classical integration
+  methods (Harmony, BBKNN).
+
+- **Engineering dependency evaluation.** Identifying a severe
+  API-compatibility break in the **scGen** library (it emits the deprecated
+  scvi-tools 0.x interface, unusable with current scvi-tools) and decisively
+  ruling it out as a candidate before integration (decision-log entry f,
+  2026-05-22).
+
+**AI's Role — Implementation & Drafting Support:**
+Claude Code served as an implementation and drafting assistant. It
+translated my analytical specifications into concrete Scanpy code, produced
+figures and documentation scaffolding, ran verification and sanity checks,
+and generated commit records with Co-authored-by signatures via local Git
+delegation. On occasion it also surfaced candidate interpretations of
+intermediate results — for example, the treatment-effect hypothesis recorded
+in **decision-log entry (i)** — but these were treated as proposals to be
+tested, not conclusions. The scientific direction, every methodological
+decision, and the final judgment on whether to accept or reject any
+interpretation remained mine: entry (i) documents one such AI-proposed
+narrative that I overturned through patient-level sanity checks before any
+conclusion was finalized. Directing a capable AI — specifying the analyses,
+auditing its output, and overriding it when the data demanded — was itself a
+core skill this project developed.
