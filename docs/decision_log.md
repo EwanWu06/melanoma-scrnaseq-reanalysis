@@ -10,7 +10,7 @@
 
 ---
 
-## 2026-05-19: Stage 3 Methodological Pivot
+## 2026-05-19 (a): Stage 3 Methodological Pivot
 
 > *Supersedes the earlier "data not usable" wording in commit `151704f`; that
 > phrasing was imprecise — the raw counts exist but are DUOS controlled-access.
