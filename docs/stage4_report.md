@@ -194,7 +194,7 @@ scRNA-seq appear tumor-specific (concentrated in individual tumors)
 rather than evenly distributed across a cohort. This explains why
 different studies report inconsistent recovery of these intermediate
 states: recoverability depends largely on which tumors were sampled.
-This hypothesis is presently supported by only two tumors (Mel53,
+This hypothesis is presently supported by only two informative tumors (Mel81,
 Mel110) and is hypothesis-generating (see §6 L1).
 
 ### 5c. Methodological note

@@ -2,7 +2,7 @@
 
 > This file provides project-specific context for Claude Code.
 > It is automatically loaded when Claude Code operates within this repository.
-> Updated: 2026-05-22 (post Q3.3 — scGen ruled out)
+> Updated: 2026-05-31 (Stage 4 complete, C1 Layers 1-2)
 
 ---
 
@@ -33,7 +33,7 @@ reproducibility over novel discovery.
 
 ## Current Stage
 
-**Active stage:** Stage 3 — Q3.4 cross-method comparison (`notebooks/07_method_comparison.ipynb`): Harmony vs BBKNN. Q3.1 (feasibility audit), Q3.2 (BBKNN integration, `notebooks/05_bbknn.ipynb`), and Q3.3 (scGen — ruled out, see `docs/decision_log.md` 2026-05-22 (f)) are complete.
+**Active stage:** Stage 4 complete — Cross-dataset test (Jerby-Arnon GSE115978), C1 Layers 1-2 done. Stages 1-3 complete.
 
 **Stage progression:**
 - [x] Stage 0: Setup & Foundation
@@ -48,9 +48,9 @@ reproducibility over novel discovery.
   - [x] Q2.3: Harmony batch correction + UMAP (notebook 03)
   - [x] Q2.4: Leiden clustering + Tsoi-state annotation (notebook 04)
   - [x] Q2.5: Stage 2 mini-report (`docs/stage2_report.md`)
-- [ ] Stage 3: Deep Learning Methods Application
-- [ ] Stage 4: Synthesis & Deliverables
-- [ ] Stretch: Cross-dataset Robustness (Jerby-Arnon GSE115978)
+- [x] Stage 3: Cross-method comparison (Harmony vs BBKNN; DL methods ruled out)
+- [x] Stage 4: Cross-dataset test (Jerby-Arnon), C1 Layers 1-2
+- [x] Stretch: Cross-dataset Robustness (Jerby-Arnon GSE115978) — merged into Stage 4
 
 ---
 
