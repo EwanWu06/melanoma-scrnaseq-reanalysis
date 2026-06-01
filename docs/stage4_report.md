@@ -97,15 +97,19 @@ cluster/cohort level.
 
 ### 3d. Normalization control (dual-source)
 
-To rule out normalization scheme or source matrix as the cause of
-NC/Transitory failure, NGFR-positive rate was compared across two
+To assess whether the source matrix or quantification pipeline affects the
+observed NGFR signal, NGFR-positive rate was compared across two
 independent sources of Tirosh malignant cells: GSE72056
 (log2(TPM/10+1), n=1,257) gives 10.0%, distributed across 9 patients
 with top patient 27.0%; GSE115978 (raw counts + normalize+log1p,
 n=1,158) gives 8.5%, also across 9 patients with top patient 31.6%. The
 leading shared NGFR-contributing patients are Mel79/89/81 (with Mel53
-positive in both sources). This agreement indicates NGFR signal
-characteristics are robust to source and normalization.
+positive in both sources). This agreement indicates NGFR detection rate is robust across the two
+source matrices. (Note: % expressing is by construction invariant to
+normalize_total/log1p, which preserve zeros, so this comparison speaks to
+source/quantification rather than to normalization scheme. Normalization
+is addressed directly by Layer 1 — same tumors, different normalization,
+same outcome.)
 
 ## 4. Results
 
@@ -161,13 +165,15 @@ which NGFR is elevated and MITF/SOX10 simultaneously collapse — a
 dedifferentiated tumor. NGFR elevation alone (Mel81) stops at
 Melanocytic; dedifferentiation (Mel110) produces NC/Transitory.
 
-### [R4] Normalization and source matrix ruled out
+### [R4] NGFR detection robust across source matrices
 
 The dual-source NGFR-positive rates (GSE72056 10.0% vs GSE115978 8.5%)
 and patient distributions (both 9 patients, top only ~27–32%, matching
-contributor identities) are highly consistent, indicating the
-non-recoverability of NC/Transitory is independent of normalization
-scheme and source matrix, and further confirming P1's reading that NGFR
+contributor identities) are highly consistent, indicating NGFR detection is robust across the two source matrices. The
+independence from normalization scheme is established not here (where %
+expressing is invariant to normalization by construction) but by Layer 1,
+which reprocesses the same tumors under a different normalization and still
+recovers no NC/Transitory. This is consistent with P1's reading that NGFR
 is spread across multiple patients with no single outlier driver.
 
 ## 5. Discussion
@@ -251,8 +257,9 @@ Stage 4 C1 refines Stage 3 P1: the failure to recover NC/Transitory in
 Tirosh is confirmed at the cohort level and survives patient-level
 scrutiny, but its mechanism is cohort composition — specifically, the
 absence of a dedifferentiated tumor (NGFR-high with MITF/SOX10
-collapse) — rather than uniform NGFR suppression, method ceiling,
-normalization scheme, or source matrix. NGFR-defined Tsoi states appear
+collapse) — rather than uniform NGFR suppression, method ceiling, or source matrix.
+(Normalization is excluded by Layer 1: same tumors, different
+normalization, same result.) NGFR-defined Tsoi states appear
 to be tumor-specific dedifferentiation phenomena whose cohort-level
 recoverability depends on tumor sampling.
 

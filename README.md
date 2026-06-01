@@ -45,10 +45,12 @@ in the Tirosh malignant cells.*
 
 ## Key Findings
 
-1. **Both classical methods fail identically (P1).** Harmony and BBKNN,
-   despite different mechanisms, recover only Melanocytic and
-   Undifferentiated — establishing the NC/Transitory gap as dataset-level,
-   not method-specific.
+1. **Both classical methods fail identically (P1).** Harmony and BBKNN
+   recover only Melanocytic and Undifferentiated; in both, NGFR remains
+   uniformly weak across all clusters. This upstream signal weakness — not
+   the choice of integration method — is what makes the NC/Transitory gap
+   dataset-level; cross-method agreement rules out a method-specific
+   artifact.
 
 2. **Cross-dataset: the gap is cohort composition, not uniform NGFR
    suppression.** The same pipeline on an independent cohort recovers

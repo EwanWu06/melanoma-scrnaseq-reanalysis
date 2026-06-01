@@ -12,7 +12,7 @@ Melanoma malignant cells exhibit transcriptional heterogeneity along a dediffere
 
 Stage 2 applied Harmony + Leiden clustering and recovered only 2 of 4 states (Mel + Undiff). The Stage 2 report (`docs/stage2_report.md`) attributed the Transitory/NC failure to two possible causes: dataset-level weak NGFR signal, and method-level residual batch effect at Harmony's default θ=2 (where the highest-NGFR cluster, cl3 with NGFR mean = 0.83, was dominated by patient pt80, preventing separation of biological signal from patient-specific effects). With n=1 method, the dataset-vs-method question was unresolvable.
 
-Stage 3's scientific motivation is precisely this question: on the same data subset, apply a structurally different integration method and compare four-state recovery. If both methods fail at Transitory/NC through different mechanisms, the limitation is dataset-level; if failure modes differ, it is method-level. Raw-count-dependent methods are excluded due to DUOS access restrictions (entry a); Stage 3 is restricted to log-input methods.
+Stage 3's scientific motivation is precisely this question: on the same data subset, apply a structurally different integration method and compare four-state recovery. If the failure traces to weak NGFR signal present before integration (visible identically across methods), the limitation is dataset-level; if it traces to method-specific residual batch structure, it is method-level. Cross-method agreement thus distinguishes a signal-level limitation from a method-parameter artifact. Raw-count-dependent methods are excluded due to DUOS access restrictions (entry a); Stage 3 is restricted to log-input methods.
 
 ## 3. Methods
 
@@ -34,7 +34,7 @@ Stage 3 initially planned four Core methods accepting log input (Harmony, Seurat
 
 **Cluster recovery and cross-method agreement (C1/C2).** Harmony at res=0.3 yields 6 clusters (Mel: cl0/cl1; Undiff: cl4; Other (batch?): cl2/cl3/cl5). BBKNN at res=0.5 yields 3 clusters (Mel: 0, Undiff: 1, Ambiguous: 2). C2 strict Tsoi-state agreement: ARI = +0.492, NMI = +0.395 (moderate).
 
-**[P1] Both methods recover only Mel and Undiff; both fail at Transitory and Neural crest-like.** Intermediate states require elevated NGFR, which remains uniformly weak across all clusters in both methods (B1). Independent recovery of Stage 2's "2 of 4" finding under a structurally different integration mechanism **elevates this limitation from a Harmony-specific ceiling to a dataset-level constraint** — a conclusion Stage 2 alone could not have established.
+**[P1] Both methods recover only Mel and Undiff; both fail at Transitory and Neural crest-like.** Intermediate states require elevated NGFR, which remains uniformly weak across all clusters in both methods (B1). This uniform NGFR weakness is a signal-level property present before integration; the dataset-level character follows from it directly. Cross-method agreement rules out a Harmony-specific parameter artifact but does not, by itself, establish the dataset-level claim — that rests on the upstream NGFR weakness, not on the second method's failure.
 
 **[P1b] The "2 of 4" framing partly reflects a discretization artifact.** B1 shows smooth marker gradients across clusters (MITF 4.3 → 1.3, AXL 0.5 → 1.6 inversely). Each method's third category — Harmony "Other (batch?)" and BBKNN "Ambiguous" — captures cells mid-gradient that resist assignment to either pole. The Tirosh malignant population appears continuum-dominated rather than discretely structured, consistent with Tirosh 2016's own preference for continuous signature scores over discrete state labels.
 
@@ -50,7 +50,7 @@ Stage 3 initially planned four Core methods accepting log input (Harmony, Seurat
 
 ## 5. Discussion
 
-**Stage 3's contribution.** Stage 3 upgrades Stage 2's single-method finding into a two-mechanism comparison. The Transitory/NC failure is elevated from "Harmony ceiling" to dataset-level NGFR signal limitation — an upgrade impossible under n=1 method. A second finding emerges that is invisible under any single-method analysis: the same biological label refers to different cell populations across methods (P5). This finding's visibility derives precisely from cross-method comparison.
+**Stage 3's contribution.** Stage 3 upgrades Stage 2's single-method finding into a two-mechanism comparison. The Transitory/NC failure is a signal-level limitation (uniform NGFR weakness, B1) rather than a Harmony parameter ceiling; cross-method agreement confirms it is not a single-method artifact. A second finding emerges that is invisible under any single-method analysis: the same biological label refers to different cell populations across methods (P5). This finding's visibility derives precisely from cross-method comparison.
 
 **Tirosh 2016 and Tsoi 2018.** Tsoi's four-state model was built on bulk RNA-seq from multiple cell lines, a setting with clear discrete structure. Tirosh 2016 itself preferred continuous signature scores along the same dedifferentiation axis. P1b supports the latter as a better fit for Tirosh single-cell data — the smooth MITF/AXL gradient suggests continuum-dominated structure where the four-state framework imposes imperfect discretization. This is not a conceptual failure of Tsoi's model but a context-specific mismatch with Tirosh-Smart-seq2-malignant data.
 
