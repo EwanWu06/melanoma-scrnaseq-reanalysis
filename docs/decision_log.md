@@ -593,13 +593,17 @@ revision; future readers should consult `docs/stage4_dataset_schema.md`
 
 ---
 
-## 2026-05-26 (i): Stage 4 Phase 2.6 statistical naïveté — mentor χ² narrative reach
+## 2026-05-26 (i): Stage 4 — a confounded χ² narrative caught by patient-level sanity checks
 
-> Self-documented mentor error. Phase 2.6 Layer 2 treatment hypothesis 
-> chi-square returned p < 0.0001 with 100% post-treatment in NC cluster. 
-> Mentor immediately reached for "treatment-induced biology" narrative 
-> framing for Stage 3 P1 revision. Phase 2.7 sanity checks revealed the 
-> result reflects patient/treatment confounding, not biology.
+> Self-documented near-miss in interpretation. Phase 2.6 (Layer 2) produced
+> an eye-catching result: the NGFR-high clusters were ~100% post-treatment,
+> χ² = 36.58, p < 0.0001 — which invited a "treatment-induced
+> dedifferentiation" reading of Stage 3's P1. The AI assistant proposed that
+> reading; it did not sit right with me, so rather than adopt it I directed
+> Phase 2.7 design-level sanity checks. Those checks showed the result
+> reflects patient/treatment confounding, not biology, and P1 was instead
+> refined to its cohort-composition form. This entry records the reasoning so
+> the correction is auditable.
 
 ### Trigger
 
@@ -608,10 +612,11 @@ Transitory clusters showed extreme treatment-group composition (NC
 72/72 = 100% post, Trans 21/28 = 75% post; combined NGFR-high 93/100 = 
 93% post). Chi-square test: χ² = 36.58, p < 0.0001.
 
-Mentor's immediate framing was: "NGFR-high states are treatment-induced 
+The AI-proposed framing was: "NGFR-high states are treatment-induced 
 dedifferentiation, consistent with Tsoi 2018 + BRAF resistance 
 literature. P1 revised to 'Tirosh failed to recover NGFR states because 
-cohort lacks treatment-exposed cells.'"
+cohort lacks treatment-exposed cells.'" I was not convinced and held it as 
+a hypothesis to test rather than a conclusion.
 
 ### What Phase 2.7 sanity checks revealed
 
@@ -631,22 +636,23 @@ cohort lacks treatment-exposed cells.'"
    "Tirosh = naive cohort" hypothesis underlying the treatment-biology 
    narrative is empirically false.
 
-### Mentor's error
+### Why the first reading was wrong
 
-I (mentor) reached for biological narrative based on χ² magnitude 
-without analyzing experimental design. Specifically:
+The AI-proposed reading reached for a biological narrative based on χ² 
+magnitude without analyzing experimental design. Specifically:
 
-- I did not request patient breakdown before interpreting χ² (Phase 2.6 
-  → 2.7 progression was prompted by Ewan + Claude Code's sanity 
-  surfacing, not mentor-initiated)
-- I treated pseudo-replicated cell-level data as if independent — 
-  860 cells from 11 patients are not 860 independent observations
-- I did not verify the Tirosh-cohort treatment status assumption before 
-  building narrative on it
-- I was prior-anchored: Phase 1.2 verdict was "P1 strengthened"; when 
-  Phase 2 data appeared to contradict, I over-corrected and latched 
-  onto the first available alternative (treatment biology) rather than 
-  continuing to test
+- It interpreted the χ² before any patient breakdown was requested. The 
+  Phase 2.6 → 2.7 progression was driven by my insistence on a 
+  patient-level breakdown before accepting the inference — I was not 
+  convinced by the clean χ² and asked for the design to be checked first.
+- It treated pseudo-replicated cell-level data as if independent — 
+  860 cells from 11 patients are not 860 independent observations.
+- It did not verify the Tirosh-cohort treatment-status assumption before 
+  building a narrative on it.
+- It was prior-anchored: the Phase 1.2 verdict was "P1 strengthened"; when 
+  Phase 2 data appeared to contradict, the reading over-corrected and 
+  latched onto the first available alternative (treatment biology) rather 
+  than continuing to test.
 
 ### Forward fix
 
@@ -668,9 +674,10 @@ multi-patient single-cell data:
    72 cells from 2 patients is much weaker evidence than 70% post in 
    72 cells from 10 patients.
 
-4. **Mentor role is to slow down narrative when verdict is too clean, 
-   not accelerate**. χ² p < 0.0001 should trigger "verify this isn't 
-   pseudo-replication" instinct, not "build narrative" instinct.
+4. **When a verdict looks too clean, slow the narrative down rather than 
+   accelerate it**. χ² p < 0.0001 should trigger a "verify this isn't 
+   pseudo-replication" instinct, not a "build narrative" instinct — the 
+   reviewer's job is to apply that brake, which is what caught this case.
 
 ### Stage 4 narrative consequence
 

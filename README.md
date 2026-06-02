@@ -187,12 +187,17 @@ translated my analytical specifications into concrete Scanpy code, produced
 figures and documentation scaffolding, ran verification and sanity checks,
 and generated commit records with Co-authored-by signatures via local Git
 delegation. On occasion it also surfaced candidate interpretations of
-intermediate results — for example, the treatment-effect hypothesis recorded
-in **decision-log entry (i)** — but these were treated as proposals to be
-tested, not conclusions. The scientific direction, every methodological
-decision, and the final judgment on whether to accept or reject any
-interpretation remained mine: entry (i) documents one such AI-proposed
-narrative that I overturned through patient-level sanity checks before any
-conclusion was finalized. Directing a capable AI — specifying the analyses,
-auditing its output, and overriding it when the data demanded — was itself a
-core skill this project developed.
+intermediate results, which I treated as proposals to be tested rather than
+conclusions. The clearest case is **decision-log entry (i)**: during Stage 4,
+the AI assistant proposed a statistically striking interpretation — that the
+NGFR-high states were treatment-induced, backed by a χ² test at p < 0.0001.
+It did not sit right with me, so rather than adopt it I directed a set of
+patient-level sanity checks on the experimental design. Those checks showed
+the signal was driven almost entirely by a single tumor (Mel110, ~74%), that
+treatment status was fully confounded with patient identity, and that the
+narrative's core premise was empirically false. I rejected the interpretation
+and refined P1 to its correct, cohort-composition form. The AI could generate
+a plausible hypothesis; recognizing that it was unsafe and choosing to test it
+rather than adopt it was my call. Directing a capable AI — specifying the
+analyses, auditing its output, and overriding it when the data demanded — was
+itself a core skill this project developed.
