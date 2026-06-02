@@ -71,11 +71,13 @@ heterogeneity). This report completes Layers 1 and 2; Layer 3 and C2
 ### 3b. Layer 2 (New cohort)
 
 Filtering to Cohort = New and cell.types = Mal gives 860 malignant
-cells across 11 patients. The pipeline mirrors Stage 2:
-normalize_total(1e6) + log1p, HVG (flavor='seurat', 2,000 genes),
-scale, PCA (50), Harmony (batch_key='samples', θ=2), neighbors (15,
-n_pcs=30), Leiden multi-resolution sweep; working resolution r=0.1 (6
-clusters). Because this dataset's normalization scheme differs from
+cells across 11 patients. The pipeline follows the Stage 2 paradigm but, because the input is raw
+counts, adds two steps Stage 2 omitted: normalize_total(1e6) + log1p, then
+HVG (flavor='seurat', 2,000 genes), scale (max_value=10), PCA (50), Harmony
+(batch_key='samples', θ=2), neighbors (15, n_pcs=30), Leiden
+multi-resolution sweep; working resolution r=0.1 (6 clusters). Stage 2, on
+log-TPM input, deliberately applied neither normalization nor scaling (an
+extra scaling step distorts inter-genic relationships). Because this dataset's normalization scheme differs from
 Tirosh's log2(TPM/10+1), marker thresholds were recalibrated per
 dataset, and cross-dataset comparison relies on "% expressing" and
 distribution shape rather than direct mean comparison.
@@ -85,7 +87,12 @@ distribution shape rather than direct mean comparison.
 Filtering to Cohort = Tirosh and cell.types = Mal gives 1,158 malignant
 cells across 12 patients — the same Tirosh tumors corresponding to
 Stage 2's 1,257 cells, but here reconstructed and normalized from
-GSE115978's raw counts. The pipeline matches Layer 2; to avoid the
+GSE115978's raw counts. The modest difference from Stage 2's count (1,158
+vs 1,257 cells, 12 vs 15 patients) reflects a different malignancy-calling
+criterion — Stage 2 used Tirosh's original malignant_status==2, whereas
+Layer 1 uses Jerby-Arnon's cell.types=='Mal' re-annotation — while
+patient-level correspondence (Mel79 ↔ patient 79) remains exact. The
+pipeline matches Layer 2; to avoid the
 z-score comparability problem from Layer 2 (where AXL entered the HVG
 set and was scaled), all four marker statistics were computed on
 un-scaled normalized data. Comparison is cluster-level rather than
@@ -192,6 +199,16 @@ Mel53, though extremely NGFR-positive, has only 14 cells, too few to
 form a stable cluster. Whether NGFR states can be recovered at the
 cohort level depends on whether sufficient NGFR-rich dedifferentiated
 tumors are sampled.
+
+Balderson et al. (2024) recovered all four Tsoi states from these same
+Tirosh malignant cells. Their recovery used a continuous-trajectory
+approach (PCA + Monocle), where a state is a position along a pseudotime
+axis; the present claim concerns discrete cluster separability — whether
+Leiden forms a stable, distinct NC/Transitory cluster. A continuum can be
+traversed without its endpoints forming separable clusters (cf. P1b, Stage
+3). The two findings are therefore compatible: NGFR-defined states may
+exist as trajectory positions in Tirosh while remaining too sparse to
+crystallize as discrete clusters.
 
 ### 5b. NGFR states are tumor-specific
 

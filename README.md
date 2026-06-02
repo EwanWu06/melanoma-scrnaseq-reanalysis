@@ -115,7 +115,13 @@ Balderson 2024 (a classical re-analysis benchmark), and Heumos 2023
 
 ## Reproducibility & Data Access
 
-- **Environment:** see [`environment.yml`](environment.yml).
+- **Environment:** pinned core versions in
+  [`environment.lock.yml`](environment.lock.yml) (the authoritative
+  reproducibility record); a looser human-readable
+  [`environment.yml`](environment.yml) is also provided. Versions were
+  confirmed for Stages 1–3 via notebook runtime prints and a conda export;
+  the Stage 4 notebooks did not print versions, so their environment is
+  inferred from the same conda snapshot rather than byte-level confirmed.
 - **Data:** raw data are not committed (gitignored). GSE72056 (Tirosh
   2016, public log-TPM) and GSE115978 (Jerby-Arnon 2018, public counts)
   are available from GEO. Raw counts / FASTQ for count-based deep-learning
