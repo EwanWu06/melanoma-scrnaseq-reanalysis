@@ -145,7 +145,11 @@ it happened to sample Mel110, a dedifferentiated tumor.
 Re-running the identical pipeline from raw counts on the same Tirosh
 tumors (1,158 cells), r=0.1 yields 7 clusters with Tsoi distribution
 Melanocytic 1,069 and Undifferentiated 89 (cl5) — no Neural crest-like
-or Transitory, consistent with Stage 2 on GSE72056. The highest-NGFR
+or Transitory, consistent with Stage 2 on GSE72056. (Note: the Stage 4 notebooks use
+the default leidenalg Leiden backend, whereas Stage 2/3 used
+flavor='igraph'; since state assignments rest on manual per-cluster
+marker positivity, they are not sensitive to this backend difference.)
+The highest-NGFR
 cluster (cl6, n=86) has NGFR positivity only 27.9% (24/86), but retains
 MITF 76.7% and SOX10 81.4%, and is therefore annotated Melanocytic
 rather than NC (true NC requires MITF/SOX10 collapse). cl6 is dominated

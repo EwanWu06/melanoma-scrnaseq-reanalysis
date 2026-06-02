@@ -16,8 +16,7 @@ et al. 2024 recapitulated these four states in malignant cells from the Tirosh
 2016 dataset (GSE72056) using a conventional workflow (PCA + Monocle trajectory
 inference). However, their analysis was conducted without any batch correction.
 Given that the dataset is derived from 19 patients and features highly
-imbalanced sample sizes per patient, this omission represents a glaring
-methodological weakness. The research question for the current stage is: does
+imbalanced sample sizes per patient, this omission represents a notable methodological gap. The research question for the current stage is: does
 the Tirosh dataset still support a clean, four-state Tsoi structure under a
 classic workflow that incorporates batch correction (Harmony) and an upgraded
 clustering algorithm (Leiden)?
@@ -72,7 +71,10 @@ batch artifact). Tsoi state labels were assigned manually by the author based
 on biological judgment rather than automated classification. Clusters with
 single-patient dominance $>70\%$ were classified as Other (batch?), while
 clusters failing to match any known Tsoi state signature were labeled
-Ambiguous.
+Ambiguous. (The 0.90 threshold is a conservative automatic flag; the
+operational classification threshold is the stricter 70%, matching the Q3.2
+BBKNN annotation in Stage 3, where clusters with ≥70% single-patient
+dominance were labeled 'Other (batch?)' and 50–70% treated as skewed.)
 
 ## 3. Results
 
@@ -170,7 +172,9 @@ increasing $\theta$ risks erasing authentic biological states). This specific
 challenge provides the motivation for Stage 3, which compares integration
 methods that accept log-normalized input (Harmony, Seurat RPCA, scGen, UCE)
 for their ability to recover states such as cl3 (pt80, highest $NGFR$) that
-are currently submerged by patient-specific signatures. Count-based
+are currently submerged by patient-specific signatures. (Roadmap note: Seurat RPCA,
+scGen, and UCE were subsequently ruled out; the realized comparison is
+Harmony vs BBKNN — see decision_log and stage3_report.) Count-based
 scVI/scANVI were excluded once raw counts proved DUOS controlled-access (see
 `docs/decision_log.md`).
 
@@ -191,6 +195,8 @@ only through the DUOS controlled-access portal (confirmed by Dr. Tirosh,
 2026-05-19), which is not obtainable on this project's timeline. Stage 3 is
 therefore reframed as a comparison of integration methods that accept
 log-normalized input — Harmony, Seurat RPCA, scGen, UCE — for their ability
-to recover the Tsoi four-state model. This mirrors a real-world condition for
+to recover the Tsoi four-state model. (As above, this early roadmap was
+revised: the realized Stage 3 comparison is Harmony vs BBKNN; Seurat
+RPCA/scGen/UCE were ruled out.) This mirrors a real-world condition for
 many historical scRNA-seq datasets and is treated as part of the project's
 honest framing rather than a flaw (full rationale: `docs/decision_log.md`).

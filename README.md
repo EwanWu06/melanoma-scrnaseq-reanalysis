@@ -53,8 +53,10 @@ in the Tirosh malignant cells.*
    artifact.
 
 2. **Cross-dataset: the gap is cohort composition, not uniform NGFR
-   suppression.** The same pipeline on an independent cohort recovers
-   Neural crest-like and Transitory; on the Tirosh tumors it does not.
+   suppression.** The same analysis pipeline (with a minor Leiden-backend
+   difference noted in the Stage 4 report) on an independent cohort
+   recovers Neural crest-like and Transitory; on the Tirosh tumors it
+   does not.
 
 | Layer 2 (independent New cohort) | Layer 1 (same Tirosh tumors) |
 |---|---|
