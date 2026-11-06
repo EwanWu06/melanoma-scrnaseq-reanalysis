@@ -2,7 +2,7 @@
 
 > This file provides project-specific context for Claude Code.
 > It is automatically loaded when Claude Code operates within this repository.
-> Updated: 2026-05-31 (Stage 4 complete, C1 Layers 1-2)
+> Updated: 2026-11-05 (annotation recheck, decision_log entry j)
 
 ---
 
@@ -34,6 +34,10 @@ reproducibility over novel discovery.
 ## Current Stage
 
 **Active stage:** Stage 4 complete — Cross-dataset test (Jerby-Arnon GSE115978), C1 Layers 1-2 done. Stages 1-3 complete.
+**2026-11-05 recheck (decision_log j):** the Stage 4 Layer 2 Neural crest-like / Transitory labels are withdrawn
+(SOX10 lost, contrary to the Tsoi table), as is the "Tirosh lacks a dedifferentiated tumor" mechanism.
+See `docs/stage4_annotation_recheck.md`. Annotate only against the full four-marker table, with thresholds
+and the single-patient rule written down before annotating.
 
 **Stage progression:**
 - [x] Stage 0: Setup & Foundation
@@ -309,6 +313,10 @@ regeneration. To modify the notebook, edit the build script and re-run
 ---
 
 ## Open Issues / TODOs
+
+- [x] 2026-11-05 annotation recheck (`docs/stage4_annotation_recheck.md`, decision_log j)
+- [ ] Re-annotate Stages 2–4 under one written rule set (marker thresholds + single-patient rule fixed
+      before annotating; use detection and expression level)
 
 - [x] Dr. Tirosh raw-count request — **resolved 2026-05-19**: Dr. Tirosh
       replied promptly; GSE72056 raw counts **exist but are DUOS

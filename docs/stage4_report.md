@@ -1,5 +1,40 @@
 # Cross-Dataset Test of Stage 3 P1: From "Dataset-Level NGFR Limitation" to a Cohort-Composition Mechanism
 
+> **Revision notice (2026-11-05, decision log entry j).** A recheck against
+> the project's own four-marker Tsoi table
+> ([`stage4_annotation_recheck.md`](stage4_annotation_recheck.md)) found
+> that the Layer 2 clusters labeled Neural crest-like (cl3) and Transitory
+> (cl5) have lost SOX10 (detection 2.8% and 10.7%, against 77–85% in the
+> cohort's Melanocytic clusters). Tsoi defines both intermediate states as
+> SOX10↑, so these labels are withdrawn. The NGFR-high cells form an
+> NGFR+ SOX10− population, 96% of it from Mel110, that matches none of the
+> four states.
+>
+> **Superseded in this report:**
+> - the Abstract's claims that Layer 2 recovers NC/Transitory, and its
+>   mechanism sentence;
+> - the state labels in R1 (its patient-composition numbers remain correct
+>   as descriptions of the NGFR-high clusters);
+> - R3, including the rule "true NC requires MITF/SOX10 collapse", which
+>   inverts Tsoi: SOX10 loss marks the Undifferentiated subtype;
+> - the Layer 1 cl6 rationale, which never considered Transitory for a
+>   MITF↑ SOX10↑ NGFR-elevated cluster;
+> - §5a–5b, L3 and §7.
+>
+> The §2 Background also omits SOX10↑ from the Neural crest-like
+> definition; the full table is in `docs/literature/tsoi_2018.md`.
+>
+> **Still stands:**
+> - Layer 1 reproduces the Stage 2 picture on the same tumors;
+> - no Tirosh cluster shows strong NGFR signal;
+> - NGFR detection is robust across source matrices (R4);
+> - the patient/treatment confound analysis (entry i).
+>
+> The recheck also finds that about 8% of Tirosh malignant cells show an
+> intermediate-state marker pattern. These cells are scattered across 4–5
+> patients, too sparse to form clusters. The original text below is kept
+> unedited for auditability.
+
 ## 1. Abstract
 
 Stage 3 reached conclusion P1: NGFR signal is broadly weak across Tirosh
@@ -122,6 +157,8 @@ same outcome.)
 
 ### [R1] Layer 2 recovers NC and Transitory, but they are Mel110-driven
 
+*[Superseded in part — see the revision notice at the top of this report.]*
+
 At r=0.1 (6 clusters), Layer 2's Tsoi distribution is: Melanocytic 376
 (cl1+cl2), Ambiguous-Mel 342 (cl0), Neural crest-like 72 (cl3),
 Ambiguous 42 (cl4), Transitory 28 (cl5), totaling 860. Unlike Stage
@@ -157,6 +194,8 @@ by Mel81 (81/86 = 94.2%).
 
 ### [R3] Mel81 versus Mel110: the distinction is dedifferentiation, not NGFR itself
 
+*[Superseded in part — see the revision notice at the top of this report.]*
+
 Placing Layer 1's Mel81 beside Layer 2's Mel110, both are
 "single-tumor-dominated NGFR-elevated clusters" (Mel110 75–91% of its
 cluster/NGFR+ pool, Mel81 83–94%), but their biological meaning differs
@@ -191,6 +230,8 @@ is spread across multiple patients with no single outlier driver.
 
 ### 5a. Refining P1: from dataset-level to cohort composition
 
+*[Superseded in part — see the revision notice at the top of this report.]*
+
 P1 holds under patient-level scrutiny: Tirosh's NGFR-positive cells are
 spread across 9 patients with the top patient at only ~32%, not driven
 by 1–2 outliers, so the cohort-level conclusion that "NGFR is
@@ -215,6 +256,8 @@ exist as trajectory positions in Tirosh while remaining too sparse to
 crystallize as discrete clusters.
 
 ### 5b. NGFR states are tumor-specific
+
+*[Superseded in part — see the revision notice at the top of this report.]*
 
 Taking Layers 1 and 2 together, NGFR-defined Tsoi states in melanoma
 scRNA-seq appear tumor-specific (concentrated in individual tumors)
@@ -254,7 +297,7 @@ inseparable; the 12 Tirosh-subset patients are likewise 100% one-way.
 Whether treatment participates in NGFR-state formation can be neither
 established nor excluded.
 
-**L3 — cluster 6 batch caveat.** Layer 1's cl6 is 94.2% from a single
+*[Superseded — see revision notice.]* **L3 — cluster 6 batch caveat.** Layer 1's cl6 is 94.2% from a single
 patient (Mel81), and may carry patient-specific residual batch signal
 (analogous to Stage 2's "Other (batch?)" catch-all). But whether cl6 is
 genuine Mel81 biology or residual batch, the conclusion is unchanged:
@@ -273,6 +316,8 @@ multi-patient NGFR-rich cohort are all deferred; this report is scoped
 to Layers 1 and 2.
 
 ## 7. Conclusions and Future Directions
+
+*[Superseded in part — see the revision notice at the top of this report.]*
 
 Stage 4 C1 refines Stage 3 P1: the failure to recover NC/Transitory in
 Tirosh is confirmed at the cohort level and survives patient-level

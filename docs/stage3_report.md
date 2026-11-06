@@ -1,5 +1,20 @@
 # Stage 3 Mini-Report: Cross-Method Comparison of Batch Integration on Tirosh 2016 Melanoma scRNA-seq
 
+> **Revision notice (2026-11-05, decision log entry j).** A recheck
+> against the project's own four-marker Tsoi table
+> ([`stage4_annotation_recheck.md`](stage4_annotation_recheck.md)) qualifies
+> this report's statement that both methods recover Melanocytic and
+> Undifferentiated.
+> - The two methods do agree that no cluster shows strong NGFR signal.
+> - The "Undifferentiated" labels (Harmony 33 cells, BBKNN 635 cells) do not
+>   meet the full four-marker definition. On all four detection rates,
+>   BBKNN's 635-cell cluster is indistinguishable from the cohort average.
+> - Under a relative NGFR threshold, BBKNN's "Ambiguous" cl2 (218 cells,
+>   NGFR 13.8%, no patient above 44%) is a Transitory/NC candidate. Under an
+>   absolute ≥ 50% threshold, no cluster is.
+>
+> The original text below is kept unedited.
+
 ## 1. Abstract
 
 This report presents Stage 3 Q3.4, a cross-method comparison of batch integration on 1,257 malignant cells from Tirosh et al. (2016, GSE72056). Two methods are compared: Harmony (linear post-PCA correction, Stage 2 baseline) and BBKNN (graph-based batch-balanced kNN, Q3.2). Stage 3 originally evaluated 6 candidate methods; 4 were ruled out (scVI/scANVI: raw-count dependency; UCE: raw-count dependency; the anchor-based slot Seurat RPCA → Scanorama: R/Python interop, then small-batch silent failure; scGen: API drift) — four method-family slots in total, leaving Harmony and BBKNN. Each ruling has an independent decision-log entry (a–f).

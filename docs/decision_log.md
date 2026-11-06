@@ -693,3 +693,73 @@ After Phase 2.7-2.8 sanity checks, Stage 4 Layer 2's final finding is:
 
 `notebooks/08_jerby_arnon_load.ipynb` Cell 30-38 (Phase 2.6 + 2.7 + 2.8 
 sequence).
+
+---
+
+## 2026-11-05 (j): Tsoi-state annotation recheck — Stage 4 NC/Transitory labels withdrawn
+
+> Self-documented correction of a conclusion that had been finalized. On
+> 2026-11-03, during a later review, the AI assistant flagged that the Stage 4
+> intermediate-state labels contradict the project's own Tsoi table. I directed
+> a read-only recheck of every stage's annotation against that table and
+> decided the revisions below. Full analysis: `docs/stage4_annotation_recheck.md`;
+> script: `scripts/recheck_tsoi_annotation.py`.
+
+### Trigger
+- The project's Tsoi table (`docs/literature/tsoi_2018.md`) defines both
+  intermediate states as SOX10↑. Tsoi et al. (2018) separate Neural
+  crest-like from Undifferentiated by the latter's lower NGFR and SOX10. The
+  Layer 2 clusters labeled Neural crest-like (cl3) and Transitory (cl5) have
+  SOX10 detection of 2.8% and 10.7%, against 77–85% in the same cohort's
+  Melanocytic clusters.
+- The Stage 4 report and notebook 09 used the inverted rule "true NC
+  requires MITF/SOX10 collapse." The Stage 4 Background (§2) had also
+  dropped SOX10↑ from the Neural crest-like definition.
+- Single-patient handling differed across stages. Stage 2 set aside cl3
+  (78% patient 80) as batch; Stage 4 accepted Layer 2 cl3 (75% Mel110) as
+  a biological state.
+
+### What the recheck found
+1. Neither Layer 2 cluster matches any Tsoi state under either threshold
+   rule. Only 6 of 860 Layer 2 cells (0.7%) show an intermediate marker
+   pattern. The NGFR-high population is NGFR+ SOX10− (80 cells), 96% of it
+   from Mel110.
+2. About 8% of GSE72056 malignant cells (106) show a Transitory or NC
+   marker pattern, spread across 4–5 patients with no patient above 37%.
+   They are sparse and scattered rather than absent.
+3. Whether any Tirosh cluster counts as Transitory/NC depends on an NGFR
+   threshold that was never fixed. Under an absolute rule (≥ 50%), none
+   does. Under a relative rule (≥ 1.25× cohort rate), several do, including
+   cross-patient clusters with NGFR detection of only 14–21%.
+4. The Stage 2/3 "Undifferentiated" labels rest on MITF-low and AXL-high
+   alone and do not meet the full four-marker definition.
+
+### Decision
+- **Withdrawn:** the Layer 2 Neural crest-like and Transitory labels; the
+  Stage 4 mechanism "Tirosh lacks a dedifferentiated tumor (NGFR-high with
+  MITF/SOX10 collapse)"; README Key Findings 2–3 as previously worded;
+  Stage 4 report R3, §5a–5b and §7 as worded.
+- **Retained:** the Tirosh data contain no cluster with strong NGFR signal
+  under either integration method (NGFR detection ≤ 28% in every cluster),
+  and the two methods agree; Layer 1 reproduces the Stage 2 picture on the
+  same tumors; NGFR detection is robust across source matrices; the
+  patient/treatment confound analysis of entry (i).
+- Original reports and notebooks are kept unedited apart from revision
+  notices, so the error remains auditable.
+
+### Why the first reading was wrong
+- Annotation was done by eye, cluster by cluster, without a written
+  threshold for "↑" and without a written rule for single-patient
+  clusters. The criteria therefore drifted between stages.
+- The striking Layer 2 NGFR signal (61% detection) was matched to the
+  states that NGFR defines, and SOX10 was never checked against the table.
+  This is the same pattern as entry (i): a clean-looking result was
+  accepted before it was checked against the design.
+
+### Forward fix
+1. Write the marker thresholds and the single-patient rule down **before**
+   annotating, and apply them identically to every dataset and stage.
+2. Check every marker in the reference table, not only the one that makes
+   a cluster stand out.
+3. Open item: re-annotate Stages 2–4 under one written rule set, using
+   both detection and expression level.

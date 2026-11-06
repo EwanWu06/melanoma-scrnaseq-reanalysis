@@ -1,5 +1,23 @@
 # Stage 2 Mini-Report — Classical Pipeline Replication
 
+> **Revision notice (2026-11-05, decision log entry j).** A recheck
+> against the project's own four-marker Tsoi table
+> ([`stage4_annotation_recheck.md`](stage4_annotation_recheck.md)) qualifies
+> this report's "two of four states" result.
+> - The Melanocytic pole is robust.
+> - The "Undifferentiated" label (cl4, 33 cells) rests on MITF-low and
+>   AXL-high alone. Its SOX10 detection (81.8%) is at the cohort average,
+>   and its NGFR detection (21.2%) is twice the average, so it does not
+>   meet the table's SOX10↓ NGFR↓ definition.
+> - Whether any cluster counts as Transitory or Neural crest-like depends
+>   on an NGFR threshold this report never fixed. Under a relative
+>   threshold, cl2, cl3 and cl4 are candidates; under an absolute ≥ 50%
+>   threshold, none is.
+> - About 8% of the 1,257 malignant cells show an intermediate-state marker
+>   pattern, spread across 4–5 patients.
+>
+> The original text below is kept unedited.
+
 *Project: Learning to Re-analyze — A Methodological Study of Deep Learning
 Approaches on the Tirosh et al. (2016) Melanoma Single-Cell Dataset*
 Stage 2 (Q2.1–Q2.5) · Notebooks `01`–`04`
