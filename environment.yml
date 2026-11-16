@@ -1,0 +1,32 @@
+name: melanoma-scrnaseq
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  # Core single-cell stack
+  - scanpy
+  - anndata
+  - harmonypy        # batch integration; bioconda, pulls cpu pytorch
+  - leidenalg
+  - louvain
+  - python-igraph
+  # Scientific Python
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - numba
+  - h5py
+  - statsmodels
+  # Plotting
+  - matplotlib
+  - seaborn
+  # Notebook / dev
+  - jupyter
+  - jupyterlab
+  - ipykernel
+  - pip
+  # Pip-only (no conda package)
+  - pip:
+    - bbknn       # graph-based batch integration (Polański et al. 2020)
